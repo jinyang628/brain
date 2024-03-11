@@ -8,6 +8,12 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.post("/api/generate_notes")
+@app.post("/api/infer")
 def generate_notes():
-    pass
+    response = {
+        "data": {
+            "summary": "ABC",
+            "code": "DEF"
+        }
+    }
+    return response
