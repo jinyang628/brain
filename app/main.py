@@ -10,7 +10,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.post("/api/infer")
+@app.post("/api/inference")
 def generate_notes(input: InferInputModel):
     try:
         # TODO: Pass input to inference
