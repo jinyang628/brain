@@ -4,14 +4,16 @@ from app.models.infer import InferInputModel
 
 app = FastAPI()
 
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-    
+
+
 @app.post("/api/infer")
 def generate_notes(input: InferInputModel):
     try:
-        # TODO: Pass input to inference 
+        # TODO: Pass input to inference
         print(input)
         # Do not return inference result here. That will be a separate api call. Simply return a success/failure message
         return {"message": "Successfully completed inference"}
