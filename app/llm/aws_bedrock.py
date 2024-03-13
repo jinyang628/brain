@@ -9,7 +9,8 @@ class AWSBedrock(LLMBaseModel):
 
     async def send_message(
         self,
-        message: str,
+        system_message: str,
+        user_message: str
     ) -> str:
         """Sends a message to AWS Bedrock and returns the response."""
         # TODO: Implement the AWS Bedrock API call here.

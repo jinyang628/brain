@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import StrEnum
 from typing import Optional
 from app.llm.aws_bedrock import AWSBedrock
@@ -37,10 +38,11 @@ class LLMType(StrEnum):
         raise ValueError(f"Unsupported LLM type: {self}")
 
 
+@dataclass
 class LLM:
     """Wrapper class for the LLM models."""
 
-    model: LLMBaseModel
+    _model: LLMBaseModel
 
     def __init__(
         self,
@@ -49,10 +51,26 @@ class LLM:
     ):
         model_config: LLMConfig = model_config or model_type.default_config()
         if model_type == LLMType.OPENAI_GPT4:
-            self.model = OpenAI(model_config=model_config)
+            self._model = OpenAI(
+                model_name=model_type.value,
+                model_config=model_config
+                )
         elif model_type == LLMType.OPENAI_GPT3_5:
-            self.model = OpenAI(model_config=model_config)
+            self._model = OpenAI(
+                model_name=model_type.value,
+                model_config=model_config
+                )
         elif model_type == LLMType.GEMINI_PRO:
-            self.model = GoogleAI(model_config=model_config)
+            self._model = GoogleAI(
+                model_name=model_type.value,
+                model_config=model_config
+                )
         elif model_type == LLMType.AWS_BEDROCK_CLAUDE_3_SONNET:
-            self.model = AWSBedrock(model_config=model_config)
+            self._model = AWSBedrock(
+                model_name=model_type.value,
+                model_config=model_config
+                )
+            
+    @property
+    def model(self) -> LLMBaseModel:
+        return self._model

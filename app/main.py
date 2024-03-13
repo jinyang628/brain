@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from app.models.infer import InferInputModel
+from app.models.conversation import Conversation
+from app.models.inference import InferenceInput
+from app.scripts.generate import generate
 
 app = FastAPI()
 
@@ -11,10 +12,10 @@ def read_root():
 
 
 @app.post("/api/inference")
-def generate_notes(input: InferInputModel):
+async def generate_notes(input: InferenceInput):
     try:
-        # TODO: Pass input to inference
-        print(input)
+        conversation: Conversation = Conversation(**input.messages)
+        await generate(conversation)
         # Do not return inference result here. That will be a separate api call. Simply return a success/failure message
         return {"message": "Successfully completed inference"}
     except Exception as e:

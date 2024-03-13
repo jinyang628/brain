@@ -11,8 +11,8 @@ class LLMConfig(BaseModel):
 class LLMBaseModel(ABC):
     """Base class for all AI models."""
 
-    model_name: str
-    model_config: LLMConfig
+    _model_name: str
+    _model_config: LLMConfig
 
     def __init__(self, model_name: str, model_config: LLMConfig):
         if not model_name:
@@ -20,13 +20,14 @@ class LLMBaseModel(ABC):
         if not model_config:
             raise ValueError("Model config must be provided.")
 
-        self.model_name = model_name
-        self.model_config = model_config
+        self._model_name = model_name
+        self._model_config = model_config
 
     @abstractmethod
     async def send_message(
         self,
-        message: str,
+        system_message: str,
+        user_message: str,
     ) -> str:
         """Sends a message to the AI and returns the response."""
         pass

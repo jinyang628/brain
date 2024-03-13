@@ -52,3 +52,10 @@ Run the following command at the root of the repository
 Run the following command at the root of the repository
 `black .`
 
+
+## Common issues
+
+### No module named 'app'
+
+export PYTHONPATH="/Users/{MAC_NAME}/brain:$PYTHONPATH"
+
