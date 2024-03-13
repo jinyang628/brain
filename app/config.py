@@ -5,4 +5,5 @@ from app.llm.model import LLMType
 
 class InferenceConfig(BaseModel):
     """The main class describing the inference configuration."""
+
     llm_type: LLMType = LLMType.GEMINI_PRO

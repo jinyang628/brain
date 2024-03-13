@@ -2,12 +2,11 @@ from app.config import InferenceConfig
 from app.models.conversation import Conversation
 import logging
 
-from app.process.summariser import Summarizer 
+from app.process.summariser import Summarizer
 
 logging.basicConfig(level=logging.INFO)
 
 log = logging.getLogger(__name__)
-
 
 
 async def generate(conversation: Conversation) -> str:

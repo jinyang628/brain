@@ -51,26 +51,18 @@ class LLM:
     ):
         model_config: LLMConfig = model_config or model_type.default_config()
         if model_type == LLMType.OPENAI_GPT4:
-            self._model = OpenAI(
-                model_name=model_type.value,
-                model_config=model_config
-                )
+            self._model = OpenAI(model_name=model_type.value, model_config=model_config)
         elif model_type == LLMType.OPENAI_GPT3_5:
-            self._model = OpenAI(
-                model_name=model_type.value,
-                model_config=model_config
-                )
+            self._model = OpenAI(model_name=model_type.value, model_config=model_config)
         elif model_type == LLMType.GEMINI_PRO:
             self._model = GoogleAI(
-                model_name=model_type.value,
-                model_config=model_config
-                )
+                model_name=model_type.value, model_config=model_config
+            )
         elif model_type == LLMType.AWS_BEDROCK_CLAUDE_3_SONNET:
             self._model = AWSBedrock(
-                model_name=model_type.value,
-                model_config=model_config
-                )
-            
+                model_name=model_type.value, model_config=model_config
+            )
+
     @property
     def model(self) -> LLMBaseModel:
         return self._model
