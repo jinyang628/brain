@@ -1,7 +1,7 @@
-from app.config import InferenceConfig
-from app.models.conversation import Conversation
 import logging
 
+from app.config import InferenceConfig
+from app.models.conversation import Conversation
 from app.process.summariser import Summarizer
 
 logging.basicConfig(level=logging.INFO)

@@ -28,3 +28,7 @@ jobs:
     - name: Check code formatting with Black
       run: |
         black --check .
+
+    - name: Check import order with isort
+      run: |
+        isort --check-only .

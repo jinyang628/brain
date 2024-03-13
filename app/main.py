@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+
 from app.models.conversation import Conversation
 from app.models.inference import InferenceInput
 from app.scripts.generate import generate
