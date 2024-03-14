@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict, root_validator
 
 class Conversation(BaseModel):
     model_config = ConfigDict(extra="allow")
-    
+
     title: str
 
     @root_validator(pre=True)
