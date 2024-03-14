@@ -16,7 +16,7 @@ def read_root():
 async def generate_notes(input: InferenceInput):
     try:
         conversation: Conversation = Conversation(**input.messages)
-        await generate(conversation)
+        await generate(conversation=conversation)
         # Do not return inference result here. That will be a separate api call. Simply return a success/failure message
         return {"message": "Successfully completed inference"}
     except Exception as e:

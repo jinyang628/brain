@@ -1,12 +1,11 @@
-from typing import Any, Dict
+from typing import Dict
 
-from pydantic import UUID4, BaseModel, Field
+from pydantic import UUID4, BaseModel, ConfigDict, Field
 
 
 class InferenceInput(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    
     id: str = Field(..., alias="_id")
     user_id: UUID4
     messages: Dict[str, str]
-
-    class Config:
-        allow_population_by_field_name = True

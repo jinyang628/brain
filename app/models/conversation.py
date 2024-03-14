@@ -1,11 +1,10 @@
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, ConfigDict, root_validator
 
 
 class Conversation(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    
     title: str
-
-    class Config:
-        extra = "allow"
 
     @root_validator(pre=True)
     def validate_keys(cls, values):

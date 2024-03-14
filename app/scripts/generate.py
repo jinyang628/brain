@@ -11,9 +11,9 @@ log = logging.getLogger(__name__)
 
 async def generate(conversation: Conversation) -> str:
     config = InferenceConfig()
-    summarizer = Summarizer(config)
+    summarizer = Summarizer(config=config)
     try:
-        summary: str = await summarizer.summarize(conversation)
+        summary: str = await summarizer.summarize(conversation=conversation)
         return summary
     except Exception as e:
         log.error(f"Error generating summary: {e}")
