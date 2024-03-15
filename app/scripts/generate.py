@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
-async def generate(conversation: Conversation) -> str:
+async def generate_summary(conversation: Conversation) -> str:
     config = InferenceConfig()
     summarizer = Summarizer(config=config)
     try:
