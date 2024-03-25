@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
@@ -24,13 +25,14 @@ async def generate_notes(input: InferenceInput):
         tasks: list[str] = input.tasks
         validated_tasks: list[Task] = Task.validate(tasks) 
                 
-        summary: str = ""
-        practice: str = ""
+        summary: Optional[str] = None
+        practice: Optional[str] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
                 summary = await generate_summary(conversation=conversation)
             elif task == Task.PRACTICE:
-                # summary = await generate_summary(conversation=conversation)
+                if not summary:
+                    summary = await generate_summary(conversation=conversation)
                 # TODO: implement practice
                 # practice: str = await generate_practice(summary=summary)
                 practice = "practice"
