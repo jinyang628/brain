@@ -34,7 +34,7 @@ class GoogleAI(LLMBaseModel):
         if system_message:
             messages.append(HumanMessage(content=system_message))
             messages.append(
-                AIMessage(content="Sure, I will stirctly follow the instructions.")
+                AIMessage(content="Sure, I will strictly follow the instructions.")
             )
         messages.append(HumanMessage(content=user_message))
 
