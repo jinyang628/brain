@@ -1,13 +1,14 @@
-from enum import StrEnum
 import logging
+from enum import StrEnum
 
 log = logging.getLogger(__name__)
 
-# This class must match TaskEnum from fingers and stomach repo 
+
+# This class must match TaskEnum from fingers and stomach repo
 class Task(StrEnum):
     SUMMARISE = "summarise"
     PRACTICE = "practice"
-    
+
     def validate(task_str_lst: list[str]) -> list["Task"]:
         try:
             validated_tasks: list[Task] = []

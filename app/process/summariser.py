@@ -61,7 +61,7 @@ class Summarizer:
             )
 
             return response
-            
+
         except Exception as e:
             log.error(f"Error occurred while summarizing conversation: {e}")
             raise e

@@ -74,8 +74,6 @@ def test_messages_field(input_data, expected):
             InferenceInput(**input_data)
 
 
-
-   
 # INFERENCE_INPUT_VALID_DATA = [
 #     (
 #         {
@@ -103,14 +101,14 @@ def test_messages_field(input_data, expected):
 #         assert input_data.tasks == tasks
 #     except ValidationError:
 #         pytest.fail("Validation error raised unexpectedly for _post_entries_input_valid_data")
-    
+
 # INFERENCE_INPUT_INVALID_DATA = [
 #     (
-#         "test_conversation", 
+#         "test_conversation",
 #         [Task.SUMMARISE, Task.PRACTICE]
 #     ),
 #     (
-#         123, 
+#         123,
 #         [Task.SUMMARISE]
 #     ),
 #     (
@@ -127,5 +125,3 @@ def test_messages_field(input_data, expected):
 # def test_inference_input_invalid_data(conversation, tasks):
 #     with pytest.raises(ValidationError):
 #         InferenceInput(conversation=conversation, tasks=tasks)
-        
-       
