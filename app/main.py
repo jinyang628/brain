@@ -26,7 +26,7 @@ async def generate_notes(input: InferenceInput):
         tasks: list[str] = input.tasks
         validated_tasks: list[Task] = Task.validate(tasks)
 
-        summary: Optional[str] = None
+        summary: Optional[dict[str, str]] = None
         practice: Optional[str] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
@@ -40,6 +40,9 @@ async def generate_notes(input: InferenceInput):
         return JSONResponse(
             status_code=200, content={"summary": summary, "practice": practice}
         )
+    except ValueError as e:
+        log.error(f"Error in post-processing the LLM output: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         log.error(f"Error in generating notes: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

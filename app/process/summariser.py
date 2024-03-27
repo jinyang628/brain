@@ -12,7 +12,7 @@ from app.prompts.summariser.google_ai import (
 log = logging.getLogger(__name__)
 
 
-class Summarizer:
+class Summariser:
 
     _llm_type: LLMType
     _model: LLMBaseModel
@@ -51,7 +51,7 @@ class Summarizer:
                 # TODO
                 pass
 
-    async def summarize(self, conversation: Conversation) -> str:
+    async def summarise(self, conversation: Conversation) -> str:
         system_message: str = self.generate_system_message()
         user_message: str = self.generate_user_message(conversation=conversation)
 
