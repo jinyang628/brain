@@ -4,7 +4,6 @@ from app.config import InferenceConfig
 from app.control.summariser import post_process
 from app.models.conversation import Conversation
 from app.process.summariser import Summariser
-import asyncio
 
 logging.basicConfig(level=logging.INFO)
 

@@ -7,17 +7,12 @@ from fastapi.responses import JSONResponse
 from app.models.conversation import Conversation
 from app.models.inference import InferenceInput
 from app.models.task import Task
-from app.scripts.generate import generate_summary
+from app.scripts.practice import generate_practice
+from app.scripts.summary import generate_summary
 
 log = logging.getLogger(__name__)
 
 app = FastAPI()
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
 
 @app.post("/api/inference")
 async def generate_notes(input: InferenceInput):
@@ -27,16 +22,18 @@ async def generate_notes(input: InferenceInput):
         validated_tasks: list[Task] = Task.validate(tasks)
 
         summary: Optional[dict[str, str]] = None
-        practice: Optional[str] = None
+        practice: Optional[list[tuple[str, str]]] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
                 summary = await generate_summary(conversation=conversation)
             elif task == Task.PRACTICE:
                 if not summary:
                     summary = await generate_summary(conversation=conversation)
-                # TODO: implement practice
-                # practice: str = await generate_practice(summary=summary)
-                practice = "practice"
+                practice = []
+                for key, value in summary.items():
+                    language, code = await generate_practice(topic=key, content=value)
+                    practice.append((language, code))                      
+                    
         return JSONResponse(
             status_code=200, content={"summary": summary, "practice": practice}
         )
@@ -46,3 +43,4 @@ async def generate_notes(input: InferenceInput):
     except Exception as e:
         log.error(f"Error in generating notes: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+    
