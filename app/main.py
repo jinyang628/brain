@@ -24,10 +24,10 @@ async def generate_notes(input: InferenceInput):
         practice: Optional[list[tuple[str, str]]] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
-                summary = await generate_summary(conversation_dict=input.conversation)
+                summary = await generate_summary(conversations=input.conversation)
             elif task == Task.PRACTICE:
                 if not summary:
-                    summary = await generate_summary(conversation_dict=input.conversation)
+                    summary = await generate_summary(conversations=input.conversation)
                 practice = []
                 for key, value in summary.items():
                     language, code = await generate_practice(topic=key, content=value)
