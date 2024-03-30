@@ -17,7 +17,6 @@ app = FastAPI()
 @app.post("/api/inference")
 async def generate_notes(input: InferenceInput):
     try:
-        conversation: Conversation = Conversation(**input.conversation)
         tasks: list[str] = input.tasks
         validated_tasks: list[Task] = Task.validate(tasks)
 
@@ -25,22 +24,27 @@ async def generate_notes(input: InferenceInput):
         practice: Optional[list[tuple[str, str]]] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
-                summary = await generate_summary(conversation=conversation)
+                summary = await generate_summary(conversation_dict=input.conversation)
             elif task == Task.PRACTICE:
                 if not summary:
-                    summary = await generate_summary(conversation=conversation)
+                    summary = await generate_summary(conversation_dict=input.conversation)
                 practice = []
                 for key, value in summary.items():
                     language, code = await generate_practice(topic=key, content=value)
-                    practice.append((language, code))                      
+                    practice.append((language, code))        
                     
         return JSONResponse(
-            status_code=200, content={"summary": summary, "practice": practice}
+            status_code=200, 
+            content={"summary": summary, "practice": practice}
         )
     except ValueError as e:
         log.error(f"Error in post-processing the LLM output: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=400, detail=str(e)
+        )
     except Exception as e:
         log.error(f"Error in generating notes: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500, detail=str(e)
+        )
     

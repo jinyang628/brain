@@ -1,5 +1,5 @@
 from app.config import InferenceConfig
-from app.control.examiner import post_process
+from app.control.post.examiner import post_process
 from app.process.examiner import Examiner
 import logging
 

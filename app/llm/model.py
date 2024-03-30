@@ -18,22 +18,22 @@ class LLMType(StrEnum):
         if self == LLMType.OPENAI_GPT4:
             return LLMConfig(
                 temperature=0.7,
-                max_tokens=100,
+                max_input_tokens=100,
             )
         elif self == LLMType.OPENAI_GPT3_5:
             return LLMConfig(
                 temperature=0.7,
-                max_tokens=100,
+                max_input_tokens=100,
             )
         elif self == LLMType.GEMINI_PRO:
             return LLMConfig(
                 temperature=0.7,
-                max_tokens=100,
+                max_input_tokens=10000,
             )
         elif self == LLMType.AWS_BEDROCK_CLAUDE_3_SONNET:
             return LLMConfig(
                 temperature=0.7,
-                max_tokens=100,
+                max_input_tokens=100,
             )
         raise ValueError(f"Unsupported LLM type: {self}")
 

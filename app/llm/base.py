@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 from pydantic import BaseModel
 
 
 class LLMConfig(BaseModel):
     temperature: float
-    max_tokens: int
+    max_input_tokens: int
 
 
+@dataclass
 class LLMBaseModel(ABC):
     """Base class for all AI models."""
 
@@ -31,3 +33,7 @@ class LLMBaseModel(ABC):
     ) -> str:
         """Sends a message to the AI and returns the response."""
         pass
+    
+    @property
+    def model_config(self) -> LLMConfig:
+        return self._model_config
