@@ -21,7 +21,7 @@ async def generate_notes(input: InferenceInput):
         validated_tasks: list[Task] = Task.validate(tasks)
 
         summary: Optional[dict[str, str]] = None
-        practice: Optional[list[tuple[str, str, str]]] = None
+        practice: Optional[list[dict[str, str]]] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
                 summary = await generate_summary(conversations=input.conversation)
@@ -31,8 +31,11 @@ async def generate_notes(input: InferenceInput):
                 practice = []
                 for key, value in summary.items():
                     language, question, answer = await generate_practice(topic=key, content=value)
-                    practice.append((language, question, answer))        
-                    
+                    practice.append({
+                        "language": language,
+                        "question": question,
+                        "answer": answer
+                    })                    
         return JSONResponse(
             status_code=200, 
             content={"summary": summary, "practice": practice}
