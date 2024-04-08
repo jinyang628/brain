@@ -33,7 +33,8 @@ def example_function():
 """
     return system_message
 
-def generate_google_ai_examiner_user_message(topic: str, content:str) -> str:
+
+def generate_google_ai_examiner_user_message(topic: str, content: str) -> str:
     user_message: str = f"Topic: {topic}\nContent: {content}\n"
     user_message += "\nWrite a block of code that illustrates the concept highlighted in the conversation:"
     return user_message

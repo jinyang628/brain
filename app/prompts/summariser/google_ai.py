@@ -19,6 +19,8 @@ Here is an example of the expected output format:
 
 def generate_google_ai_summariser_user_message(conversation: Conversation):
     user_message: str = conversation.stringify()
-    user_message += "\n Summarise the key ideas of the model's response in the conversation:"
+    user_message += (
+        "\n Summarise the key ideas of the model's response in the conversation:"
+    )
 
     return user_message

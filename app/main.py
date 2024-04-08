@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 app = FastAPI()
 
+
 @app.post("/api/inference")
 async def generate_notes(input: InferenceInput):
     try:
@@ -30,24 +31,18 @@ async def generate_notes(input: InferenceInput):
                     summary = await generate_summary(conversations=input.conversation)
                 practice = []
                 for key, value in summary.items():
-                    language, question, answer = await generate_practice(topic=key, content=value)
-                    practice.append({
-                        "language": language,
-                        "question": question,
-                        "answer": answer
-                    })                    
+                    language, question, answer = await generate_practice(
+                        topic=key, content=value
+                    )
+                    practice.append(
+                        {"language": language, "question": question, "answer": answer}
+                    )
         return JSONResponse(
-            status_code=200, 
-            content={"summary": summary, "practice": practice}
+            status_code=200, content={"summary": summary, "practice": practice}
         )
     except ValueError as e:
         log.error(f"Error in post-processing the LLM output: {str(e)}")
-        raise HTTPException(
-            status_code=400, detail=str(e)
-        )
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         log.error(f"Error in generating notes: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=str(e)
-        )
-    
+        raise HTTPException(status_code=500, detail=str(e))

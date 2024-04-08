@@ -1,7 +1,5 @@
 import logging
 from typing import Any
-import re
-from transformers import AutoTokenizer
 
 from app.config import InferenceConfig
 from app.control.post.summariser import post_process
@@ -57,32 +55,27 @@ class Summariser:
             case LLMType.AWS_BEDROCK_CLAUDE_3_SONNET:
                 # TODO
                 pass
-            
-    def pre_process(
-        self, 
-        conversation_dict: dict[str, Any]
-    ) -> list[Conversation]:
+
+    def pre_process(self, conversation_dict: dict[str, Any]) -> list[Conversation]:
         conversation_lst: list[Conversation] = pre_process(
-            conversation_dict=conversation_dict, 
-            max_input_tokens=self._max_input_tokens
+            conversation_dict=conversation_dict, max_input_tokens=self._max_input_tokens
         )
         log.info(f"Length of conversation list: {len(conversation_lst)} post split")
         return conversation_lst
-        
+
     async def summarise(self, conversation: Conversation) -> str:
-        
+
         system_message: str = self.generate_system_message()
         user_message: str = self.generate_user_message(conversation=conversation)
 
         try:
             response: str = await self._model.send_message(
-                system_message=system_message, 
-                user_message=user_message
+                system_message=system_message, user_message=user_message
             )
             try:
                 processed_summary: dict[str, str] = post_process(summary=response)
                 log.info(f"Processed Summary: {processed_summary}")
-                return processed_summary    
+                return processed_summary
             except ValueError as e:
                 log.error(f"Error post-processing summary: {e}")
                 raise e

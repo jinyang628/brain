@@ -33,7 +33,7 @@ class LLMBaseModel(ABC):
     ) -> str:
         """Sends a message to the AI and returns the response."""
         pass
-    
+
     @property
     def model_config(self) -> LLMConfig:
         return self._model_config
