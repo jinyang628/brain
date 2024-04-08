@@ -6,8 +6,7 @@ from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
 from app.prompts.examiner.google_ai import (
     generate_google_ai_examiner_system_message,
-    generate_google_ai_examiner_user_message,
-)
+    generate_google_ai_examiner_user_message)
 
 log = logging.getLogger(__name__)
 

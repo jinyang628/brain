@@ -1,6 +1,7 @@
+import logging
+
 from app.config import InferenceConfig
 from app.process.examiner import Examiner
-import logging
 
 log = logging.getLogger(__name__)
 

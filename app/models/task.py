@@ -1,10 +1,7 @@
 import logging
 from enum import StrEnum
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(filename)s:%(lineno)d - %(message)s'
-)
+logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d - %(message)s")
 
 log = logging.getLogger(__name__)
 

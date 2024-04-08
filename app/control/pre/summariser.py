@@ -1,14 +1,12 @@
 import json
 import logging
 from typing import Any
+
 from transformers import AutoTokenizer
 
 from app.models.conversation import Conversation
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(filename)s:%(lineno)d - %(message)s'
-)
+logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d - %(message)s")
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +20,9 @@ def pre_process(
         )
         return conversation_lst
     except TypeError as e:
-        log.error(f"Type of conversation_dict is wrong when pre-processing user input: {e}")
+        log.error(
+            f"Type of conversation_dict is wrong when pre-processing user input: {e}"
+        )
         raise e
     except Exception as e:
         log.error(f"Error pre-processing user chatlog input: {e}")
@@ -48,7 +48,9 @@ def _split_by_token_length(
             )
             token_dict[key] = token_length
     except TypeError as e:
-        log.error(f"Type of conversation_dict is wrong when calculating token length: {e}")
+        log.error(
+            f"Type of conversation_dict is wrong when calculating token length: {e}"
+        )
         raise e
     except Exception as e:
         log.error(

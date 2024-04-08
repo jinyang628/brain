@@ -9,8 +9,7 @@ from app.llm.model import LLM, LLMType
 from app.models.conversation import Conversation
 from app.prompts.summariser.google_ai import (
     generate_google_ai_summariser_system_message,
-    generate_google_ai_summariser_user_message,
-)
+    generate_google_ai_summariser_user_message)
 
 log = logging.getLogger(__name__)
 
