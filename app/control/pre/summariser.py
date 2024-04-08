@@ -5,6 +5,11 @@ from transformers import AutoTokenizer
 
 from app.models.conversation import Conversation
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(filename)s:%(lineno)d - %(message)s'
+)
+
 log = logging.getLogger(__name__)
 
 
@@ -16,6 +21,9 @@ def pre_process(
             conversation_dict=conversation_dict, max_input_tokens=max_input_tokens
         )
         return conversation_lst
+    except TypeError as e:
+        log.error(f"Type of conversation_dict is wrong when pre-processing user input: {e}")
+        raise e
     except Exception as e:
         log.error(f"Error pre-processing user chatlog input: {e}")
         raise e
@@ -30,6 +38,8 @@ def _split_by_token_length(
 
     try:
         for key, value in conversation_dict.items():
+            if not isinstance(value, str):
+                raise TypeError(f"Value for key {key} is not a string.")
             if key == "title":
                 title = value
                 continue
@@ -37,6 +47,9 @@ def _split_by_token_length(
                 tokenizer(json.dumps(value), add_special_tokens=False)["input_ids"]
             )
             token_dict[key] = token_length
+    except TypeError as e:
+        log.error(f"Type of conversation_dict is wrong when calculating token length: {e}")
+        raise e
     except Exception as e:
         log.error(
             f"Error calculating token length for each message in the conversation: {e}"
