@@ -25,10 +25,10 @@ async def generate_notes(input: InferenceInput):
         practice: Optional[list[dict[str, str]]] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
-                summary = await generate_summary(conversations=input.conversation)
+                summary, token_sum = await generate_summary(conversations=input.conversation)
             elif task == Task.PRACTICE:
                 if not summary:
-                    summary = await generate_summary(conversations=input.conversation)
+                    summary, token_sum = await generate_summary(conversations=input.conversation)
                 practice = []
                 for key, value in summary.items():
                     language, question, answer = await generate_practice(
@@ -38,7 +38,7 @@ async def generate_notes(input: InferenceInput):
                         {"language": language, "question": question, "answer": answer}
                     )
         return JSONResponse(
-            status_code=200, content={"summary": summary, "practice": practice}
+            status_code=200, content={"summary": summary, "practice": practice, "token_sum": token_sum}
         )
     except ValueError as e:
         log.error(f"Error in post-processing the LLM output: {str(e)}")

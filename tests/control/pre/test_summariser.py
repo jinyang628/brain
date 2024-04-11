@@ -48,13 +48,14 @@ def test_pre_process(
         "app.control.pre.summariser.AutoTokenizer.from_pretrained",
         return_value=mock_tokenizer,
     ):
-        result = pre_process(
+        result, token_sum = pre_process(
             conversation_dict=valid_conversation_dict, max_input_tokens=max_input_tokens
         )
         assert mock_tokenizer.call_count == MOCK_TOKENIZER_CALL_COUNT
         assert len(result) == expected_number_of_splits
         for conversation in result:
             assert isinstance(conversation, Conversation)
+
 
 
 def test_pre_process_with_invalid_input(invalid_conversation_dict):
@@ -72,7 +73,7 @@ def test_split_by_token_length(
         "app.control.pre.summariser.AutoTokenizer.from_pretrained",
         return_value=mock_tokenizer,
     ):
-        result = _split_by_token_length(valid_conversation_dict, max_input_tokens)
+        result, token_sum = _split_by_token_length(valid_conversation_dict, max_input_tokens)
         assert mock_tokenizer.call_count == MOCK_TOKENIZER_CALL_COUNT
         assert len(result) == expected_number_of_splits
         for conversation in result:

@@ -55,12 +55,13 @@ class Summariser:
                 # TODO
                 pass
 
-    def pre_process(self, conversation_dict: dict[str, Any]) -> list[Conversation]:
-        conversation_lst: list[Conversation] = pre_process(
+    def pre_process(self, conversation_dict: dict[str, Any]) -> tuple[list[Conversation], int]:
+        conversation_lst, token_sum = pre_process(
             conversation_dict=conversation_dict, max_input_tokens=self._max_input_tokens
         )
         log.info(f"Length of conversation list: {len(conversation_lst)} post split")
-        return conversation_lst
+        log.info(f"Token sum of conversation: {token_sum}")
+        return conversation_lst, token_sum
 
     async def summarise(self, conversation: Conversation) -> str:
 
