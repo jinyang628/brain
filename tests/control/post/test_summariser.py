@@ -1,10 +1,8 @@
 import pytest
-from app.control.post.summariser import (
-    post_process,
-    _reject_unlikely_topics,
-    _remove_header,
-    _extract_info,
-)
+
+from app.control.post.summariser import (_extract_info,
+                                         _reject_unlikely_topics,
+                                         _remove_header, post_process)
 
 POST_PROCESS_VALID_DATA = [
     (
