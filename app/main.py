@@ -1,10 +1,9 @@
 import logging
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 
-from app.models.conversation import Conversation
 from app.models.inference import InferenceInput
 from app.models.task import Task
 from app.scripts.practice import generate_practice
