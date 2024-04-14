@@ -39,10 +39,5 @@ class GoogleAI(LLMBaseModel):
         messages.append(HumanMessage(content=user_message))
 
         log.info(f"Sending messages to Google AI")
-        # log.info(f"Sending messages to Google AI: {messages}")
-
         response = (await self.model.ainvoke(messages)).content
-
-        # log.info(f"Google AI response: {response}")
-
         return response

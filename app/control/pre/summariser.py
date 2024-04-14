@@ -34,7 +34,7 @@ def _split_by_token_length(
     conversation_dict: dict[str, Any], max_input_tokens: int
 ) -> tuple[list[Conversation], int]:
     """Returns the splitted conversation in the form of a list (if the original conversation is too long) and the total token sum of the conversation for usage tracking in stomach. If the conversation doesn't require splitting, the list will contain only one conversation (the original conversation"""
-    
+
     tokenizer = AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
     title: str = ""
     token_dict: dict[dict[str, Any], int] = {}
@@ -60,7 +60,7 @@ def _split_by_token_length(
             f"Error calculating token length for each message in the conversation: {e}"
         )
 
-    total_token_sum: int = 0 
+    total_token_sum: int = 0
     curr_token_sum: int = 0
     conversation_lst: list[Conversation] = []
     splitted_conversation_dict: dict[str, Any] = {"title": title}

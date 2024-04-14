@@ -7,6 +7,9 @@ from app.control.pre.summariser import pre_process
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
 from app.models.conversation import Conversation
+from app.prompts.summariser.anthropic import (
+    generate_anthropic_summariser_system_message,
+    generate_anthropic_summariser_user_message)
 from app.prompts.summariser.google_ai import (
     generate_google_ai_summariser_system_message,
     generate_google_ai_summariser_user_message)
@@ -18,12 +21,12 @@ class Summariser:
 
     _llm_type: LLMType
     _model: LLMBaseModel
-    _max_input_tokens: int
+    _max_tokens: int
 
     def __init__(self, config: InferenceConfig):
         self._llm_type = config.llm_type
         self._model = LLM(model_type=self._llm_type).model
-        self._max_input_tokens = self._model.model_config.max_input_tokens
+        self._max_tokens = self._model.model_config.max_tokens
 
     def generate_system_message(self) -> str:
         match self._llm_type:
@@ -35,9 +38,10 @@ class Summariser:
                 pass
             case LLMType.GEMINI_PRO:
                 return generate_google_ai_summariser_system_message()
-            case LLMType.AWS_BEDROCK_CLAUDE_3_SONNET:
-                # TODO
-                pass
+            case LLMType.CLAUDE_3_SONNET:
+                return generate_anthropic_summariser_system_message()
+            case LLMType.CLAUDE_INSTANT_1:
+                return generate_anthropic_summariser_system_message()
 
     def generate_user_message(self, conversation: Conversation) -> str:
         match self._llm_type:
@@ -51,13 +55,20 @@ class Summariser:
                 return generate_google_ai_summariser_user_message(
                     conversation=conversation
                 )
-            case LLMType.AWS_BEDROCK_CLAUDE_3_SONNET:
-                # TODO
-                pass
+            case LLMType.CLAUDE_3_SONNET:
+                return generate_anthropic_summariser_user_message(
+                    conversation=conversation
+                )
+            case LLMType.CLAUDE_INSTANT_1:
+                return generate_anthropic_summariser_user_message(
+                    conversation=conversation
+                )
 
-    def pre_process(self, conversation_dict: dict[str, Any]) -> tuple[list[Conversation], int]:
+    def pre_process(
+        self, conversation_dict: dict[str, Any]
+    ) -> tuple[list[Conversation], int]:
         conversation_lst, token_sum = pre_process(
-            conversation_dict=conversation_dict, max_input_tokens=self._max_input_tokens
+            conversation_dict=conversation_dict, max_input_tokens=self._max_tokens
         )
         log.info(f"Length of conversation list: {len(conversation_lst)} post split")
         log.info(f"Token sum of conversation: {token_sum}")
@@ -73,7 +84,9 @@ class Summariser:
                 system_message=system_message, user_message=user_message
             )
             try:
-                processed_summary: dict[str, str] = post_process(summary=response)
+                processed_summary: dict[str, str] = post_process(
+                    summary=response, llm_type=self._llm_type
+                )
                 log.info(f"Processed Summary: {processed_summary}")
                 return processed_summary
             except ValueError as e:

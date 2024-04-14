@@ -2,7 +2,9 @@ import pytest
 
 from app.control.post.summariser import (_extract_info,
                                          _reject_unlikely_topics,
-                                         _remove_header, post_process)
+                                         _remove_header,
+                                         _remove_output_wrapper, post_process)
+from app.llm.model import LLMType
 
 POST_PROCESS_VALID_DATA = [
     (
@@ -13,19 +15,54 @@ POST_PROCESS_VALID_DATA = [
 2. **Topic2 is better**: This is the summary of the second topic. 
 
 3. **Topic3 is awesome**: This is the summary of the third topic.
-        """,
+""",
+        LLMType.GEMINI_PRO,
         {
             "Topic1 is good": "This is the summary of the first topic.",
             "Topic2 is better": "This is the summary of the second topic.",
             "Topic3 is awesome": "This is the summary of the third topic.",
         },
-    )
+    ),
+    (
+        """
+**Key Ideas:** 
+1. **Topic1 is good**: This is the summary of the first topic.
+ 
+2. **Topic2 is better**: This is the summary of the second topic. 
+
+3. **Topic3 is awesome**: This is the summary of the third topic.
+</output>
+""",
+        LLMType.CLAUDE_3_SONNET,
+        {
+            "Topic1 is good": "This is the summary of the first topic.",
+            "Topic2 is better": "This is the summary of the second topic.",
+            "Topic3 is awesome": "This is the summary of the third topic.",
+        },
+    ),
+    (
+        """
+**Key Ideas:** 
+1. **Topic1 is good**: This is the summary of the first topic.
+ 
+2. **Topic2 is better**: This is the summary of the second topic. 
+
+3. **Topic3 is awesome**: This is the summary of the third topic.
+</output>
+""",
+        LLMType.CLAUDE_INSTANT_1,
+        {
+            "Topic1 is good": "This is the summary of the first topic.",
+            "Topic2 is better": "This is the summary of the second topic.",
+            "Topic3 is awesome": "This is the summary of the third topic.",
+        },
+    ),
 ]
 
 
-@pytest.mark.parametrize("input_str, expected", POST_PROCESS_VALID_DATA)
-def test_post_process_valid(input_str, expected):
-    assert post_process(summary=input_str) == expected
+@pytest.mark.parametrize("input_str, llm_type, expected", POST_PROCESS_VALID_DATA)
+def test_post_process_valid(input_str, llm_type, expected):
+    assert post_process(summary=input_str, llm_type=llm_type) == expected
 
 
 POST_PROCESS_INVALID_DATA = [
@@ -109,3 +146,15 @@ EXTRACT_INFO_VALID_DATA = [
 @pytest.mark.parametrize("input_str, expected", EXTRACT_INFO_VALID_DATA)
 def test_extract_info_valid(input_str, expected):
     assert _extract_info(input_str) == expected
+
+
+REMOVE_OUTPUT_WRAPPER_DATA = [
+    ("This is the output. </output>", "This is the output."),
+    ("This is the output. </output>\nProbably rubbish", "This is the output."),
+    ("This is the output. </output>testetstest", "This is the output."),
+]
+
+
+@pytest.mark.parametrize("input_str, expected", REMOVE_OUTPUT_WRAPPER_DATA)
+def test_remove_output_wrapper(input_str, expected):
+    assert _remove_output_wrapper(input_str) == expected

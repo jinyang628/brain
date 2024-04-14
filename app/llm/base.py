@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class LLMConfig(BaseModel):
     temperature: float
-    max_input_tokens: int
+    max_tokens: int
 
 
 @dataclass

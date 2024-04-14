@@ -1,14 +1,18 @@
 import logging
 import re
 
+from app.llm.model import LLMType
+
 log = logging.getLogger(__name__)
 
 
-def post_process(summary: str) -> dict[str, str]:
+def post_process(summary: str, llm_type: LLMType) -> dict[str, str]:
     """Processes the output of the summariser and returns a dictionary containing the topic-summary pairs."""
     try:
         if not isinstance(summary, str):
             raise TypeError(f"Input is not a string: {summary}")
+        if llm_type == LLMType.CLAUDE_INSTANT_1 or llm_type == LLMType.CLAUDE_3_SONNET:
+            summary = _remove_output_wrapper(text=summary)
         removed_header: str = _remove_header(text=summary)
         topic_content_dict: dict[str, str] = _extract_info(text=removed_header)
         _reject_unlikely_topics(topic_content_dict)
@@ -17,6 +21,16 @@ def post_process(summary: str) -> dict[str, str]:
     except ValueError as e:
         log.error(f"Error post-processing summary: {e}")
         raise ValueError(f"Error post-processing summary: {e}")
+
+
+def _remove_output_wrapper(text: str) -> str:
+    """Removes the output wrapper from the text and returns the remaining text."""
+    index = text.find("</output>")
+    if index == -1:
+        raise ValueError(
+            f"The text does not contain the expected index '<output>': {text}"
+        )
+    return text[:index].strip()
 
 
 def _reject_unlikely_topics(topic_content_dict: dict[str, str]):

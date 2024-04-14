@@ -11,19 +11,21 @@ log = logging.getLogger(__name__)
 
 
 async def generate_summary(
-    conversations: Union[dict[str, Any] | list[Conversation]], 
-    attempt: int = 1, 
+    conversations: Union[dict[str, Any] | list[Conversation]],
+    attempt: int = 1,
     max_attempts: int = 9,
     token_sum: int = 0,
 ) -> tuple[dict[str, str], int]:
     """Returns the summary in topic-content key-value pairs and the total token sum of the conversation for usage tracking in stomach."""
-    
+
     config = InferenceConfig()
     summariser = Summariser(config=config)
 
     conversation_lst: list[Conversation] = None
     if attempt == 1:
-        conversation_lst, token_sum = summariser.pre_process(conversation_dict=conversations)
+        conversation_lst, token_sum = summariser.pre_process(
+            conversation_dict=conversations
+        )
     else:
         conversation_lst = conversations
 
