@@ -65,30 +65,48 @@ def test_invalid_determine_question_and_answer(block_1, block_2):
 
 POST_PROCESS_VALID_DATA = [
     (
-        "```python\ndef test(): print('Hello')```\n```python\ndef love_coding(): # TODO: Add the missing line(s) below.```",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```",
         LLMType.GEMINI_PRO,
         (
             "python",
-            "def love_coding(): # TODO: Add the missing line(s) below.",
-            "def test(): print('Hello')",
+            "def test():\n# TODO: Add the missing line(s) below.",
+            "def test():\nprint('Hello')",
         ),
     ),
     (
-        "```python\ndef test(): print('Hello')```\n```python\ndef love_coding(): # TODO: Add the missing line(s) below.```</output>",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```</output>",
         LLMType.CLAUDE_3_SONNET,
         (
             "python",
-            "def love_coding(): # TODO: Add the missing line(s) below.",
-            "def test(): print('Hello')",
+            "def test():\n# TODO: Add the missing line(s) below.",
+            "def test():\nprint('Hello')",
         ),
     ),
     (
-        "```python\ndef test(): print('Hello')```\n```python\ndef love_coding(): # TODO: Add the missing line(s) below.```</output>",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```</output>",
         LLMType.CLAUDE_INSTANT_1,
         (
             "python",
-            "def love_coding(): # TODO: Add the missing line(s) below.",
-            "def test(): print('Hello')",
+            "def test():\n# TODO: Add the missing line(s) below.",
+            "def test():\nprint('Hello')",
+        ),
+    ),
+    (
+        "```python\ndef test():\n# TODO: Add the missing line(s) below.```\n```python\ndef test():\nprint('Hello')```",
+        LLMType.OPENAI_GPT3_5,
+        (
+            "python",
+            "def test():\n# TODO: Add the missing line(s) below.",
+            "def test():\nprint('Hello')",
+        ),
+    ),
+    (
+        "```python\ndef test():\n# TODO: Add the missing line(s) below.\nhappy()```\n```python\ndef test():\nprint('Hello')\nhappy()```",
+        LLMType.OPENAI_GPT4,
+        (
+            "python",
+            "def test():\n# TODO: Add the missing line(s) below.\nhappy()",
+            "def test():\nprint('Hello')\nhappy()",
         ),
     ),
 ]
@@ -128,3 +146,110 @@ REMOVE_OUTPUT_WRAPPER_DATA = [
 @pytest.mark.parametrize("input_str, expected", REMOVE_OUTPUT_WRAPPER_DATA)
 def test_remove_output_wrapper(input_str, expected):
     assert _remove_output_wrapper(input_str) == expected
+
+VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_VALID_DATA = [
+    (
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+# TODO: Add the missing line(s) below.
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
+"""
+    ),
+    (
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+# TODO: Add the missing line(s) below.
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
+"""
+    ),
+    (
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+# TODO: Add the missing line(s) below.
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
+"""
+    )
+]

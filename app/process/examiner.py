@@ -20,15 +20,14 @@ from app.prompts.examiner.open_ai import (
 
 log = logging.getLogger(__name__)
 
-
 class Examiner:
-
-    task = Task.PRACTICE
+    TASK = Task.PRACTICE
+    
     _llm_type: LLMType
     _model: LLMBaseModel
 
     def __init__(self, config: InferenceConfig):
-        self._llm_type = config.llm_type.get(self.task)
+        self._llm_type = config.llm_type.get(self.TASK)
         self._model = LLM(model_type=self._llm_type).model
 
     def generate_system_message(self) -> str:

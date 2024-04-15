@@ -26,14 +26,14 @@ log = logging.getLogger(__name__)
 
 class Summariser:
 
-    task = Task.SUMMARISE
+    TASK = Task.SUMMARISE
     
     _llm_type: LLMType
     _model: LLMBaseModel
     _max_tokens: int
 
     def __init__(self, config: InferenceConfig):
-        self._llm_type = config.llm_type.get(self.task)
+        self._llm_type = config.llm_type.get(self.TASK)
         self._model = LLM(model_type=self._llm_type).model
         self._max_tokens = self._model.model_config.max_tokens
 
