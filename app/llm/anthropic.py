@@ -10,16 +10,14 @@ log = logging.getLogger(__name__)
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
 
-class AWSBedrock(LLMBaseModel):
-    """This class handles the interaction with AWS Bedrock API."""
+class Anthropic(LLMBaseModel):
+    """This class handles the interaction with Anthropic API."""
 
     def __init__(self, model_name: str, model_config: LLMConfig):
         super().__init__(model_name=model_name, model_config=model_config)
         self._client = anthropic.Anthropic(
             api_key=ANTHROPIC_API_KEY,
         )
-        self._model_name = model_name
-        self._model_config = model_config
 
     async def send_message(self, system_message: str, user_message: str) -> str:
         """Sends a message to Anthropic and returns the response."""

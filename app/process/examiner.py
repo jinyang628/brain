@@ -7,9 +7,15 @@ from app.llm.model import LLM, LLMType
 from app.prompts.examiner.anthropic import (
     generate_anthropic_examiner_system_message,
     generate_anthropic_examiner_user_message)
+from app.prompts.examiner.cohere import (
+    generate_cohere_examiner_system_message,
+    generate_cohere_examiner_user_message)
 from app.prompts.examiner.google_ai import (
     generate_google_ai_examiner_system_message,
     generate_google_ai_examiner_user_message)
+from app.prompts.examiner.open_ai import (
+    generate_open_ai_examiner_system_message,
+    generate_open_ai_examiner_user_message)
 
 log = logging.getLogger(__name__)
 
@@ -26,26 +32,28 @@ class Examiner:
     def generate_system_message(self) -> str:
         match self._llm_type:
             case LLMType.OPENAI_GPT4:
-                # TODO
-                pass
+                return generate_open_ai_examiner_system_message()
             case LLMType.OPENAI_GPT3_5:
-                # TODO
-                pass
+                return generate_open_ai_examiner_system_message()
             case LLMType.GEMINI_PRO:
                 return generate_google_ai_examiner_system_message()
             case LLMType.CLAUDE_3_SONNET:
                 return generate_anthropic_examiner_system_message()
             case LLMType.CLAUDE_INSTANT_1:
                 return generate_anthropic_examiner_system_message()
+            case LLMType.COHERE:
+                return generate_cohere_examiner_system_message()
 
     def generate_user_message(self, topic: str, summary_chunk: str) -> str:
         match self._llm_type:
             case LLMType.OPENAI_GPT4:
-                # TODO
-                pass
+                return generate_open_ai_examiner_user_message(
+                    topic=topic, summary_chunk=summary_chunk
+                )
             case LLMType.OPENAI_GPT3_5:
-                # TODO
-                pass
+                return generate_open_ai_examiner_user_message(
+                    topic=topic, summary_chunk=summary_chunk
+                )
             case LLMType.GEMINI_PRO:
                 return generate_google_ai_examiner_user_message(
                     topic=topic, summary_chunk=summary_chunk
@@ -56,6 +64,10 @@ class Examiner:
                 )
             case LLMType.CLAUDE_INSTANT_1:
                 return generate_anthropic_examiner_user_message(
+                    topic=topic, summary_chunk=summary_chunk
+                )
+            case LLMType.COHERE:
+                return generate_cohere_examiner_user_message(
                     topic=topic, summary_chunk=summary_chunk
                 )
 

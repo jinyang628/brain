@@ -10,9 +10,15 @@ from app.models.conversation import Conversation
 from app.prompts.summariser.anthropic import (
     generate_anthropic_summariser_system_message,
     generate_anthropic_summariser_user_message)
+from app.prompts.summariser.cohere import (
+    generate_cohere_summariser_system_message,
+    generate_cohere_summariser_user_message)
 from app.prompts.summariser.google_ai import (
     generate_google_ai_summariser_system_message,
     generate_google_ai_summariser_user_message)
+from app.prompts.summariser.open_ai import (
+    generate_open_ai_summariser_system_message,
+    generate_open_ai_summariser_user_message)
 
 log = logging.getLogger(__name__)
 
@@ -31,26 +37,28 @@ class Summariser:
     def generate_system_message(self) -> str:
         match self._llm_type:
             case LLMType.OPENAI_GPT4:
-                # TODO
-                pass
+                return generate_open_ai_summariser_system_message()
             case LLMType.OPENAI_GPT3_5:
-                # TODO
-                pass
+                return generate_open_ai_summariser_system_message()
             case LLMType.GEMINI_PRO:
                 return generate_google_ai_summariser_system_message()
             case LLMType.CLAUDE_3_SONNET:
                 return generate_anthropic_summariser_system_message()
             case LLMType.CLAUDE_INSTANT_1:
                 return generate_anthropic_summariser_system_message()
+            case LLMType.COHERE:
+                return generate_cohere_summariser_system_message()
 
     def generate_user_message(self, conversation: Conversation) -> str:
         match self._llm_type:
             case LLMType.OPENAI_GPT4:
-                # TODO
-                pass
+                return generate_open_ai_summariser_user_message(
+                    conversation=conversation
+                )
             case LLMType.OPENAI_GPT3_5:
-                # TODO
-                pass
+                return generate_open_ai_summariser_user_message(
+                    conversation=conversation
+                )
             case LLMType.GEMINI_PRO:
                 return generate_google_ai_summariser_user_message(
                     conversation=conversation
@@ -61,6 +69,10 @@ class Summariser:
                 )
             case LLMType.CLAUDE_INSTANT_1:
                 return generate_anthropic_summariser_user_message(
+                    conversation=conversation
+                )
+            case LLMType.COHERE:
+                return generate_cohere_summariser_user_message(
                     conversation=conversation
                 )
 

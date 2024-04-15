@@ -7,10 +7,12 @@ cachetools==5.3.3
 certifi==2024.2.2
 charset-normalizer==3.3.2
 click==8.1.7
+cohere==5.2.5
 direnv==2020.12.3
 distro==1.9.0
 env-file==2020.12.3
 fastapi==0.110.0
+fastavro==1.9.4
 filelock==3.13.3
 fsspec==2024.3.1
 google-ai-generativelanguage==0.4.0
@@ -60,6 +62,7 @@ tenacity==8.2.3
 tokenizers==0.15.2
 tqdm==4.66.2
 transformers==4.39.2
+types-requests==2.31.0.20240406
 typing_extensions==4.10.0
 urllib3==2.2.1
 uvicorn==0.27.1

@@ -6,7 +6,7 @@ You will be given a topic and a summary of a technical conversation within <conv
 
 You must adhere to the following rules
 1. Generate two versions of the single block of code within <output></output> tags. One version has all the logic fully implemented and should be written within <practice></practice> tags. The second version is a replica of the first, except that 1-3 lines of code are intentionally left blank and should be written within <answer></answer> tags.
-2. Indicate with '# TODO: Add the missing line below.' in place of the lines of code that are intentionally left blank.
+2. Indicate with '# TODO: Add the missing line(s) below.' in place of the lines of code that are intentionally left blank.
 3. Enclose the block of code in ``` and specify the language at the start of the code block.
 
 Here is an example of the expected output format:
@@ -44,5 +44,5 @@ def generate_anthropic_examiner_user_message(topic: str, summary_chunk: str) -> 
     user_message: str = (
         f"<conversation>\nTopic: {topic}\nSummary: {summary_chunk}\n</conversation>\n"
     )
-    user_message += "\nWrite a block of code that illustrates the concept highlighted in the conversation: <output>"
+    user_message += "\nGenerate the two versions of the single block of code that illustrates the concept highlighted in the conversation: <output>"
     return user_message

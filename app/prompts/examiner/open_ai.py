@@ -1,4 +1,4 @@
-def generate_google_ai_examiner_system_message() -> str:
+def generate_open_ai_examiner_system_message() -> str:
     system_message: str = """
 You are good at generating half-completed coding exercises based off a summary of a technical conversation.
 
@@ -36,7 +36,7 @@ def contains_greater_than_five():
     return system_message
 
 
-def generate_google_ai_examiner_user_message(topic: str, summary_chunk: str) -> str:
+def generate_open_ai_examiner_user_message(topic: str, summary_chunk: str) -> str:
     user_message: str = f"Topic: {topic}\nSummary: {summary_chunk}\n"
     user_message += "\nGenerate the two versions of the single block of code that illustrates the concept highlighted in the conversation:"
     return user_message
