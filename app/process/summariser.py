@@ -7,6 +7,7 @@ from app.control.pre.summariser import pre_process
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
 from app.models.conversation import Conversation
+from app.models.task import Task
 from app.prompts.summariser.anthropic import (
     generate_anthropic_summariser_system_message,
     generate_anthropic_summariser_user_message)
@@ -25,12 +26,14 @@ log = logging.getLogger(__name__)
 
 class Summariser:
 
+    task = Task.SUMMARISE
+    
     _llm_type: LLMType
     _model: LLMBaseModel
     _max_tokens: int
 
     def __init__(self, config: InferenceConfig):
-        self._llm_type = config.llm_type
+        self._llm_type = config.llm_type.get(self.task)
         self._model = LLM(model_type=self._llm_type).model
         self._max_tokens = self._model.model_config.max_tokens
 

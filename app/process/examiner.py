@@ -4,6 +4,7 @@ from app.config import InferenceConfig
 from app.control.post.examiner import post_process
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
+from app.models.task import Task
 from app.prompts.examiner.anthropic import (
     generate_anthropic_examiner_system_message,
     generate_anthropic_examiner_user_message)
@@ -22,11 +23,12 @@ log = logging.getLogger(__name__)
 
 class Examiner:
 
+    task = Task.PRACTICE
     _llm_type: LLMType
     _model: LLMBaseModel
 
     def __init__(self, config: InferenceConfig):
-        self._llm_type = config.llm_type
+        self._llm_type = config.llm_type.get(self.task)
         self._model = LLM(model_type=self._llm_type).model
 
     def generate_system_message(self) -> str:
