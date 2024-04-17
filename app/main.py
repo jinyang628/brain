@@ -38,7 +38,12 @@ async def generate_notes(input: InferenceInput):
                         topic=topic, summary_chunk=summary_chunk
                     )
                     practice.append(
-                        {"language": language, "question": question, "answer": answer}
+                        {
+                            "summary_chunk": summary_chunk,
+                            "language": language,
+                            "question": question,
+                            "answer": answer
+                        }
                     )
         return JSONResponse(
             status_code=200,
