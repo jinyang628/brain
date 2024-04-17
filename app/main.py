@@ -15,7 +15,15 @@ app = FastAPI()
 
 
 @app.post("/api/inference")
-async def generate_notes(input: InferenceInput):
+async def generate_notes(input: InferenceInput) -> JSONResponse:
+    """Entrance of the inference pipeline, which generates notes based on the input conversation.
+
+    Args:
+        input (InferenceInput): The input conversation and tasks to be performed.
+
+    Returns:
+       JSONResponse: The generated notes that will be propagated back to Stomach upon successful inference.
+    """
     try:
         tasks: list[str] = input.tasks
         validated_tasks: list[Task] = Task.validate(tasks)
@@ -50,7 +58,13 @@ async def generate_notes(input: InferenceInput):
             content={"summary": summary, "practice": practice, "token_sum": token_sum},
         )
     except ValueError as e:
-        log.error(f"Error in post-processing the LLM output: {str(e)}")
+        log.error(f"Error in fully post-processing the LLM output: {str(e)}")
+        # Returns the parts that have been successfully processed. 
+        if summary or practice:
+            return JSONResponse(
+                status_code=200,
+                content={"summary": summary, "practice": practice, "token_sum": token_sum},
+            )
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         log.error(f"Error in generating notes: {str(e)}")

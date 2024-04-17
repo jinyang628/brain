@@ -23,8 +23,6 @@ def post_process(practice: str, llm_type: LLMType) -> tuple[str, str]:
         raise ValueError(f"Failed to post-process practice: {e}")
 
 def _verify_expected_similarity_and_difference(question: str, answer: str):
-    print("question: ", question)
-    print("answer: ", answer)
     question_lines = question.strip().split("\n")
     answer_lines = answer.strip().split("\n")
     todo_marker_found = False

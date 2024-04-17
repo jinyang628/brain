@@ -1,10 +1,7 @@
 import logging
 from enum import StrEnum
 
-logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d - %(message)s")
-
 log = logging.getLogger(__name__)
-
 
 # This class must match TaskEnum from fingers and stomach repo
 class Task(StrEnum):
@@ -12,6 +9,11 @@ class Task(StrEnum):
     PRACTICE = "practice"
 
     def validate(task_str_lst: list[str]) -> list["Task"]:
+        """Validates whether the task strings and transforms them into Task objects.
+        
+        Returns:
+            list[Task]: The validated tasks.
+        """
         try:
             validated_tasks: list[Task] = []
             for task_str in task_str_lst:
