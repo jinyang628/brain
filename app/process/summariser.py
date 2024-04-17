@@ -90,7 +90,14 @@ class Summariser:
         return conversation_lst, token_sum
 
     async def summarise(self, conversation: Conversation) -> str:
+        """Invokes the LLM to generate a summary of the conversation.
 
+        Args:
+            conversation (Conversation): The conversation to be summarised.
+            
+        Returns:
+            str: A string containing the summary of the conversation.
+        """
         system_message: str = self.generate_system_message()
         user_message: str = self.generate_user_message(conversation=conversation)
 

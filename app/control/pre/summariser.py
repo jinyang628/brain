@@ -6,15 +6,20 @@ from transformers import AutoTokenizer
 
 from app.models.conversation import Conversation
 
-logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d - %(message)s")
-
 log = logging.getLogger(__name__)
-
 
 def pre_process(
     conversation_dict: dict[str, Any], max_input_tokens: int
 ) -> tuple[list[Conversation], int]:
-    """Pre-processes the conversation and returns the list of splitted conversations and the total token sum of the conversation for usage tracking in stomach."""
+    """Pre-processes the conversation in preparation for summarisation.
+
+    Args:
+        conversation_dict (dict[str, Any]): The conversation dictionary to be transformed into a list of Conversation object(s).
+        max_input_tokens (int): The maximum input token length allowed per conversation. If the conversation dict exceeds this limit, it will be split into multiple conversations.
+
+    Returns:
+        tuple[list[Conversation], int]: Returns the list of splitted conversations and the total token sum of the conversation for usage tracking in stomach.
+    """
     try:
         conversation_lst, token_sum = _split_by_token_length(
             conversation_dict=conversation_dict, max_input_tokens=max_input_tokens
@@ -33,7 +38,12 @@ def pre_process(
 def _split_by_token_length(
     conversation_dict: dict[str, Any], max_input_tokens: int
 ) -> tuple[list[Conversation], int]:
-    """Returns the splitted conversation in the form of a list (if the original conversation is too long) and the total token sum of the conversation for usage tracking in stomach. If the conversation doesn't require splitting, the list will contain only one conversation (the original conversation"""
+    """Returns the splitted conversation in the form of a list (if the original conversation is too long) and the total token sum of the conversation for usage tracking in stomach. If the conversation doesn't require splitting, the list will contain only one conversation (the original conversation
+    
+    Args:
+        conversation_dict (dict[str, Any]): The conversation dictionary to be transformed into a list of Conversation object(s).
+        max_input_tokens (int): The maximum input token length allowed per conversation. If the conversation dict exceeds this limit, it will be split into multiple conversations.
+    """
 
     tokenizer = AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
     title: str = ""
