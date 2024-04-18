@@ -32,7 +32,7 @@ class Examiner:
 
     def generate_system_message(self) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4:
+            case LLMType.OPENAI_GPT4_TURBO:
                 return generate_open_ai_examiner_system_message()
             case LLMType.OPENAI_GPT3_5:
                 return generate_open_ai_examiner_system_message()
@@ -42,12 +42,14 @@ class Examiner:
                 return generate_anthropic_examiner_system_message()
             case LLMType.CLAUDE_INSTANT_1:
                 return generate_anthropic_examiner_system_message()
-            case LLMType.COHERE:
+            case LLMType.COHERE_COMMAND_R:
+                return generate_cohere_examiner_system_message()
+            case LLMType.COHERE_COMMAND_R_PLUS:
                 return generate_cohere_examiner_system_message()
 
     def generate_user_message(self, topic: str, summary_chunk: str) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4:
+            case LLMType.OPENAI_GPT4_TURBO:
                 return generate_open_ai_examiner_user_message(
                     topic=topic, summary_chunk=summary_chunk
                 )
@@ -67,7 +69,11 @@ class Examiner:
                 return generate_anthropic_examiner_user_message(
                     topic=topic, summary_chunk=summary_chunk
                 )
-            case LLMType.COHERE:
+            case LLMType.COHERE_COMMAND_R:
+                return generate_cohere_examiner_user_message(
+                    topic=topic, summary_chunk=summary_chunk
+                )
+            case LLMType.COHERE_COMMAND_R_PLUS:
                 return generate_cohere_examiner_user_message(
                     topic=topic, summary_chunk=summary_chunk
                 )

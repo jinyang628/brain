@@ -9,6 +9,8 @@ class InferenceConfig(BaseModel):
 
     llm_type: dict[Task, LLMType] = {
         Task.SUMMARISE: LLMType.GEMINI_PRO,
+        # Task.PRACTICE: LLMType.OPENAI_GPT4_TURBO
+        # Task.PRACTICE: LLMType.COHERE_COMMAND_R_PLUS
         # Task.PRACTICE: LLMType.OPENAI_GPT3_5
         Task.PRACTICE: LLMType.GEMINI_PRO
     }

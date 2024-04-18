@@ -10,16 +10,17 @@ from app.llm.open_ai import OpenAI
 
 
 class LLMType(StrEnum):
-    OPENAI_GPT4 = "gpt-4-0125-preview"
+    OPENAI_GPT4_TURBO = "gpt-4-turbo-2024-04-09"
     OPENAI_GPT3_5 = "gpt-3.5-turbo-0125"
     GEMINI_PRO = "gemini-pro"
     # AWS_BEDROCK_CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
     CLAUDE_3_SONNET = "claude-3-sonnet-20240229"
     CLAUDE_INSTANT_1 = "claude-instant-1.2"
-    COHERE = "cohere"
+    COHERE_COMMAND_R = "command-r"
+    COHERE_COMMAND_R_PLUS = "command-r-plus"
 
     def default_config(self) -> LLMConfig:
-        if self == LLMType.OPENAI_GPT4:
+        if self == LLMType.OPENAI_GPT4_TURBO:
             return LLMConfig(
                 temperature=1,
                 max_tokens=4096,
@@ -44,7 +45,12 @@ class LLMType(StrEnum):
                 temperature=1,
                 max_tokens=4096,
             )
-        elif self == LLMType.COHERE:
+        elif self == LLMType.COHERE_COMMAND_R:
+            return LLMConfig(
+                temperature=1,
+                max_tokens=4000,
+            )
+        elif self == LLMType.COHERE_COMMAND_R_PLUS:
             return LLMConfig(
                 temperature=1,
                 max_tokens=4000,
@@ -65,7 +71,7 @@ class LLM:
     ):
         model_config: LLMConfig = model_config or model_type.default_config()
         match model_type:
-            case LLMType.OPENAI_GPT4:
+            case LLMType.OPENAI_GPT4_TURBO:
                 self._model = OpenAI(
                     model_name=model_type.value, model_config=model_config
                 )
@@ -85,7 +91,11 @@ class LLM:
                 self._model = Anthropic(
                     model_name=model_type.value, model_config=model_config
                 )
-            case LLMType.COHERE:
+            case LLMType.COHERE_COMMAND_R:
+                self._model = Cohere(
+                    model_name=model_type.value, model_config=model_config
+                )
+            case LLMType.COHERE_COMMAND_R_PLUS:
                 self._model = Cohere(
                     model_name=model_type.value, model_config=model_config
                 )

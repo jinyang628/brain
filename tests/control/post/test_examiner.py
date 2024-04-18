@@ -102,7 +102,7 @@ POST_PROCESS_VALID_DATA = [
     ),
     (
         "```python\ndef test():\n# TODO: Add the missing line(s) below.\nhappy()```\n```python\ndef test():\nprint('Hello')\nhappy()```",
-        LLMType.OPENAI_GPT4,
+        LLMType.OPENAI_GPT4_TURBO,
         (
             "python",
             "def test():\n# TODO: Add the missing line(s) below.\nhappy()",

@@ -39,7 +39,7 @@ class Summariser:
 
     def generate_system_message(self) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4:
+            case LLMType.OPENAI_GPT4_TURBO:
                 return generate_open_ai_summariser_system_message()
             case LLMType.OPENAI_GPT3_5:
                 return generate_open_ai_summariser_system_message()
@@ -49,12 +49,14 @@ class Summariser:
                 return generate_anthropic_summariser_system_message()
             case LLMType.CLAUDE_INSTANT_1:
                 return generate_anthropic_summariser_system_message()
-            case LLMType.COHERE:
+            case LLMType.COHERE_COMMAND_R:
+                return generate_cohere_summariser_system_message()
+            case LLMType.COHERE_COMMAND_R_PLUS:
                 return generate_cohere_summariser_system_message()
 
     def generate_user_message(self, conversation: Conversation) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4:
+            case LLMType.OPENAI_GPT4_TURBO:
                 return generate_open_ai_summariser_user_message(
                     conversation=conversation
                 )
@@ -74,10 +76,12 @@ class Summariser:
                 return generate_anthropic_summariser_user_message(
                     conversation=conversation
                 )
-            case LLMType.COHERE:
+            case LLMType.COHERE_COMMAND_R:
                 return generate_cohere_summariser_user_message(
                     conversation=conversation
                 )
+            case LLMType.COHERE_COMMAND_R_PLUS:
+                return generate_cohere_summariser_user_message()
 
     def pre_process(
         self, conversation_dict: dict[str, Any]
