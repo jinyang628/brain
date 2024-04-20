@@ -3,6 +3,7 @@ import pytest
 from app.control.post.examiner import (_determine_question_and_answer,
                                        _extract_code, post_process)
 from app.control.post.summariser import _remove_output_wrapper
+from app.exceptions.exception import LogicError
 from app.llm.model import LLMType
 
 EXTRACT_CODE_VALID_DATA = [
@@ -132,7 +133,7 @@ POST_PROCESS_INVALID_DATA = [
 
 @pytest.mark.parametrize("practice, llm_type", POST_PROCESS_INVALID_DATA)
 def test_invalid_post_process(practice, llm_type):
-    with pytest.raises(ValueError):
+    with pytest.raises(LogicError):
         post_process(practice=practice, llm_type=llm_type)
 
 

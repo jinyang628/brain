@@ -4,6 +4,7 @@ from typing import Any
 
 from transformers import AutoTokenizer
 
+from app.exceptions.exception import LogicError
 from app.models.conversation import Conversation
 
 log = logging.getLogger(__name__)
@@ -25,13 +26,13 @@ def pre_process(
             conversation_dict=conversation_dict, max_input_tokens=max_input_tokens
         )
         return conversation_lst, token_sum
-    except TypeError as e:
+    except LogicError as e:
         log.error(
-            f"Type of conversation_dict is wrong when pre-processing user input: {e}"
+            f"Logic error while pre-processing user chatlog input: {e}"
         )
         raise e
     except Exception as e:
-        log.error(f"Error pre-processing user chatlog input: {e}")
+        log.error(f"Unexpected error while pre-processing user chatlog input: {e}")
         raise e
 
 
@@ -64,11 +65,12 @@ def _split_by_token_length(
         log.error(
             f"Type of conversation_dict is wrong when calculating token length: {e}"
         )
-        raise e
+        raise LogicError(f"Type of conversation_dict is wrong: {e}") from e
     except Exception as e:
         log.error(
             f"Error calculating token length for each message in the conversation: {e}"
         )
+        raise e
 
     total_token_sum: int = 0
     curr_token_sum: int = 0

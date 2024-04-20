@@ -3,6 +3,7 @@ from typing import Any, Union
 import asyncio 
 
 from app.config import InferenceConfig
+from app.exceptions.exception import InferenceFailure, LogicError
 from app.models.conversation import Conversation
 from app.process.summariser import Summariser
 
@@ -34,11 +35,15 @@ async def generate_summary(
 
     conversation_lst: list[Conversation] = None
     if attempt == 1:
-        conversation_lst, token_sum = summariser.pre_process(
-            conversation_dict=conversations
-        )
+        try:
+            conversation_lst, token_sum = summariser.pre_process(
+                conversation_dict=conversations
+            )
+        except LogicError as e:
+            log.error(f"Logic error while trying to pre-process conversation: {str(e)}")
+            raise e
     else:
-        conversation_lst = conversations
+        conversation_lst = conversations 
 
     merged_summary: dict[str, str] = {}
     remaining_conversations: list[Conversation] = []
@@ -68,7 +73,7 @@ async def generate_summary(
             token_sum=token_sum,
         )
     elif remaining_conversations:
-        raise ValueError(
+        raise InferenceFailure(
             f"Failed to post-process remaining {len(remaining_conversations)} conversations after {max_attempts} attempts."
         )
 

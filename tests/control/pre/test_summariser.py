@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from app.control.pre.summariser import _split_by_token_length, pre_process
+from app.exceptions.exception import LogicError
 from app.models.conversation import Conversation
 
 
@@ -58,7 +59,7 @@ def test_pre_process(
 
 
 def test_pre_process_with_invalid_input(invalid_conversation_dict):
-    with pytest.raises(TypeError):
+    with pytest.raises(LogicError):
         pre_process(conversation_dict=invalid_conversation_dict, max_input_tokens=100)
 
 

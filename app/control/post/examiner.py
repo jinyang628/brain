@@ -1,6 +1,7 @@
 import logging
 import re
 
+from app.exceptions.exception import LogicError
 from app.llm.model import LLMType
 from app.process.types import TODO_MARKER
 
@@ -22,15 +23,16 @@ def post_process(practice: str, llm_type: LLMType) -> tuple[str, str, str]:
             raise TypeError(f"Input is not a string: {practice}")
         if llm_type == LLMType.CLAUDE_INSTANT_1 or llm_type == LLMType.CLAUDE_3_SONNET:
             practice = _remove_output_wrapper(text=practice)
-        #TODO: Check where the out of index list error occurs
         language, block_1, block_2 = _extract_code(text=practice)
         question, answer = _determine_question_and_answer(block_1=block_1, block_2=block_2)
-
         question, answer = _verify_expected_similarity_and_difference(question=question, answer=answer)
         return (language, question, answer)
-    except ValueError as e:
+    except (ValueError, TypeError) as e:
         log.error(f"Error post-processing practice: {e}")
-        raise ValueError(f"Failed to post-process practice: {e}")
+        raise LogicError(message=str(e))
+    except Exception as e:
+        log.error(f"Unexpected error while post-processing practice: {e}")
+        raise e
 
 def _verify_expected_similarity_and_difference(question: str, answer: str) -> tuple[str, str]:
     """Verifies that the question and answer blocks are similar before the {TODO_MARKER} and different after the {TODO_MARKER}.

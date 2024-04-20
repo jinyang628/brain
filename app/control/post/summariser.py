@@ -1,6 +1,7 @@
 import logging
 import re
 
+from app.exceptions.exception import LogicError
 from app.llm.model import LLMType
 
 log = logging.getLogger(__name__)
@@ -23,9 +24,12 @@ def post_process(summary: str, llm_type: LLMType) -> dict[str, str]:
         _reject_unlikely_topics(topic_content_dict)
 
         return topic_content_dict
-    except ValueError as e:
-        log.error(f"Error post-processing summary: {e}")
-        raise ValueError(f"Error post-processing summary: {e}")
+    except (TypeError, ValueError) as e:
+        log.error(f"Logic error while post-processing summary: {e}")
+        raise LogicError(message=str(e))
+    except Exception as e:
+        log.error(f"Unexpected error while post-processing summary: {e}")
+        raise e
 
 
 def _remove_output_wrapper(text: str) -> str:

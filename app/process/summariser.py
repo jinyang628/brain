@@ -4,6 +4,7 @@ from typing import Any
 from app.config import InferenceConfig
 from app.control.post.summariser import post_process
 from app.control.pre.summariser import pre_process
+from app.exceptions.exception import LogicError
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
 from app.models.conversation import Conversation
@@ -86,6 +87,16 @@ class Summariser:
     def pre_process(
         self, conversation_dict: dict[str, Any]
     ) -> tuple[list[Conversation], int]:
+        """Pre-processes the conversation given the summarisation model's max tokens limit. 
+        
+        The conversation will be split up into multiple conversation chunks if it exceeds the max tokens limit.
+
+        Args:
+            conversation_dict (dict[str, Any]): The user's conversation chatlog.
+
+        Returns:
+            tuple[list[Conversation], int]: The list of conversation chunks and the total token sum of the conversation.
+        """
         conversation_lst, token_sum = pre_process(
             conversation_dict=conversation_dict, max_input_tokens=self._max_tokens
         )
@@ -109,15 +120,14 @@ class Summariser:
             response: str = await self._model.send_message(
                 system_message=system_message, user_message=user_message
             )
-            try:
-                processed_summary: dict[str, str] = post_process(
-                    summary=response, llm_type=self._llm_type
-                )
-                log.info(f"Processed Summary: {processed_summary}")
-                return processed_summary
-            except ValueError as e:
-                log.error(f"Error post-processing summary: {e}")
-                raise e
+            processed_summary: dict[str, str] = post_process(
+                summary=response, llm_type=self._llm_type
+            )
+            log.info(f"Processed Summary: {processed_summary}")
+            return processed_summary
+        except LogicError as e:
+            log.error(f"Logic error occurred while summarizing conversation: {e}")
+            raise e
         except Exception as e:
             log.error(f"Error occurred while summarizing conversation: {e}")
             raise e

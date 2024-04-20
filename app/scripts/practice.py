@@ -1,6 +1,7 @@
 import logging
 import asyncio
 from app.config import InferenceConfig
+from app.exceptions.exception import InferenceFailure, LogicError
 from app.process.examiner import Examiner
 
 log = logging.getLogger(__name__)
@@ -14,17 +15,28 @@ async def generate_practice(
         _generate(topic, summary_chunk)
         for topic, summary_chunk in summary.items()
     ]
-
-    results = await asyncio.gather(*tasks)
     
-    practice = [
-        {
-            "summary_chunk": summary_chunk,
-            "language": result[0],
-            "question": result[1],
-            "answer": result[2]
-        } for (topic, summary_chunk), result in zip(summary.items(), results)
-    ]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    practice: list[dict[str, str]] = []
+    failures: int = 0
+    for (topic, summary_chunk), result in zip(summary.items(), results):
+        if isinstance(result, Exception):
+            # TODO: Handle InferenceFailure and LogicError separately if necessary (but we should still pokemon catch Exception here to ensure we don't accidentally append None/unexpected stuff to practice)
+            log.error(f"Error processing practice for topic: {topic} - {result}")
+            failures += 1
+            continue
+        practice.append(
+            {
+                "summary_chunk": summary_chunk,
+                "language": result[0],
+                "question": result[1],
+                "answer": result[2]
+            }
+        )
+    if failures:
+        log.warning(f"{failures} out of {len(summary)} tasks failed during practice generation.")
+    
     return practice
         
 async def _generate(
@@ -51,9 +63,9 @@ async def _generate(
         log.info(f"Question: {question}")
         log.info(f"Answer: {answer}")
         return language, question, answer
-    except ValueError as e:
+    except LogicError as e:
         log.error(
-            f"Error post-processing practice (attempt {attempt}/{max_attempts}): {e}"
+            f"Logic error occurred while generating practice (attempt {attempt}/{max_attempts}): {e}"
         )
 
     if attempt < max_attempts:
@@ -65,6 +77,6 @@ async def _generate(
             max_attempts=max_attempts,
         )
     else:
-        raise ValueError(
+        raise InferenceFailure(
             f"Failed to post-process practice for topic: {topic} after {max_attempts} attempts."
         )

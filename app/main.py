@@ -4,6 +4,7 @@ from typing import Any, Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 
+from app.exceptions.exception import InferenceFailure, LogicError
 from app.models.inference import InferenceInput
 from app.models.task import Task
 from app.scripts.practice import generate_practice
@@ -46,15 +47,19 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
             status_code=200,
             content={"summary": summary, "practice": practice, "token_sum": token_sum},
         )
-    except ValueError as e:
-        log.error(f"Error in fully post-processing the LLM output: {str(e)}")
-        # Returns the parts that have been successfully processed. 
-        if summary or practice:
-            return JSONResponse(
-                status_code=200,
-                content={"summary": summary, "practice": practice, "token_sum": token_sum},
-            )
-        raise HTTPException(status_code=400, detail=str(e))
+    except LogicError as e:
+        log.error(f"Logic error while trying to generate notes: {str(e)}")
+    except InferenceFailure as e:
+        log.error(f"Inference failure while trying to generate notes: {str(e)}")
     except Exception as e:
         log.error(f"Error in generating notes: {str(e)}")
+        # Raise exception only when an unexpected error occurs. If not, try to return good results as much as possible.
         raise HTTPException(status_code=500, detail=str(e))
+    
+    # Returns the parts that have been successfully processed. 
+    if summary or practice:
+        return JSONResponse(
+            status_code=200,
+            content={"summary": summary, "practice": practice, "token_sum": token_sum},
+        )
+    raise HTTPException(status_code=400, detail=str(e))
