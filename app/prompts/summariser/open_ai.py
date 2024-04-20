@@ -9,7 +9,8 @@ Follow these instructions:
 1. Summarise the key ideas present in the model's response without referencing specific function or variable names.
 2. Avoid narrating the conversation history without adding value to the summary.
 3. Try to generalise and avoid being too specific to the examples present in the conversation, so that the summary can be applied to a wide range of similar scenarios.
-    
+4. The summary should be in a declarative tone and avoid referencing the model explicitly.
+
 Here is an example of the expected output format: 
 
 **Key Ideas:**

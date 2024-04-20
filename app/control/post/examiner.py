@@ -23,11 +23,9 @@ def post_process(practice: str, llm_type: LLMType) -> tuple[str, str, str]:
         if llm_type == LLMType.CLAUDE_INSTANT_1 or llm_type == LLMType.CLAUDE_3_SONNET:
             practice = _remove_output_wrapper(text=practice)
         #TODO: Check where the out of index list error occurs
-        print("extract code")
         language, block_1, block_2 = _extract_code(text=practice)
-        print("determine question and answer")
         question, answer = _determine_question_and_answer(block_1=block_1, block_2=block_2)
-        print("verify expected similarity and difference")
+
         question, answer = _verify_expected_similarity_and_difference(question=question, answer=answer)
         return (language, question, answer)
     except ValueError as e:
@@ -76,6 +74,8 @@ def _verify_expected_similarity_and_difference(question: str, answer: str) -> tu
                 raise ValueError("The question and answer blocks differ after the TODO marker.")
         else:
             # Match lines one-to-one before the TODO marker
+            if a_index >= len(answer_lines):
+                raise ValueError("The answer does not cover all lines in the question before the TODO marker.")
             if question_lines[q_index] != answer_lines[a_index]:
                 raise ValueError("The question and answer blocks differ before the TODO marker.")
             q_index += 1
