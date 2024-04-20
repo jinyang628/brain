@@ -1,4 +1,3 @@
-from marshmallow import ValidationError
 import pytest
 
 from app.config import InferenceConfig

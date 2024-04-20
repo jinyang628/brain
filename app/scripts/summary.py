@@ -1,5 +1,6 @@
 import logging
 from typing import Any, Union
+import asyncio 
 
 from app.config import InferenceConfig
 from app.models.conversation import Conversation
@@ -24,11 +25,8 @@ async def generate_summary(
         max_attempts (int, optional): The attempt number which will cause the inference pipeline to stop when reached. Defaults to 9.
         token_sum (int, optional): The total token sum that is used by the user to generate the notes. Defaults to 0.
 
-    Raises:
-        ValueError: _description_
-
     Returns:
-        tuple[dict[str, str], int]: _description_
+        tuple[dict[str, str], int]: The summary in topic-content key-value pairs and the total token sum of the conversation
     """
 
     config = InferenceConfig()
@@ -43,19 +41,21 @@ async def generate_summary(
         conversation_lst = conversations
 
     merged_summary: dict[str, str] = {}
-    remaining_conversations: list[Conversation] = conversation_lst.copy()
-
-    for conversation in conversation_lst:
-        try:
-            summary: dict[str, str] = await summariser.summarise(
-                conversation=conversation
-            )
-            merged_summary.update(summary)
-            remaining_conversations.remove(conversation)
-        except ValueError as e:
+    remaining_conversations: list[Conversation] = []
+    summary_tasks = [
+        summariser.summarise(conversation=conversation) for conversation in conversation_lst
+    ]
+    summaries = await asyncio.gather(*summary_tasks, return_exceptions=True)
+    
+    for i, result in enumerate(summaries):
+        if isinstance(result, Exception):
+            # Handle exceptions individually
             log.error(
-                f"Error post-processing summary (attempt {attempt}/{max_attempts}): {e}"
+                f"Error processing conversation {i+1} (attempt {attempt}/{max_attempts}): {result}"
             )
+            remaining_conversations.append(conversation_lst[i])
+        else:
+            merged_summary.update(result)
 
     if remaining_conversations and attempt < max_attempts:
         log.info(
