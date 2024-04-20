@@ -1,5 +1,5 @@
 import logging
-
+import asyncio
 from app.config import InferenceConfig
 from app.process.examiner import Examiner
 
@@ -7,6 +7,27 @@ log = logging.getLogger(__name__)
 
 
 async def generate_practice(
+    summary: dict[str, str]
+) -> list[dict[str, str]]:
+    
+    tasks = [
+        _generate(topic, summary_chunk)
+        for topic, summary_chunk in summary.items()
+    ]
+
+    results = await asyncio.gather(*tasks)
+    
+    practice = [
+        {
+            "summary_chunk": summary_chunk,
+            "language": result[0],
+            "question": result[1],
+            "answer": result[2]
+        } for (topic, summary_chunk), result in zip(summary.items(), results)
+    ]
+    return practice
+        
+async def _generate(
     topic: str, summary_chunk: str, attempt=1, max_attempts=9
 ) -> tuple[str, str, str]:
     """Generates a practice question and answer for a given topic and summary chunk.
@@ -37,7 +58,7 @@ async def generate_practice(
 
     if attempt < max_attempts:
         log.info(f"Retrying practice generation for topic: {topic}...")
-        return await generate_practice(
+        return await _generate(
             topic=topic,
             summary_chunk=summary_chunk,
             attempt=attempt + 1,

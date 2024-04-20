@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
@@ -40,19 +40,8 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
                     summary, token_sum = await generate_summary(
                         conversations=input.conversation
                     )
-                practice = []
-                for topic, summary_chunk in summary.items():
-                    language, question, answer = await generate_practice(
-                        topic=topic, summary_chunk=summary_chunk
-                    )
-                    practice.append(
-                        {
-                            "summary_chunk": summary_chunk,
-                            "language": language,
-                            "question": question,
-                            "answer": answer
-                        }
-                    )
+                practice: dict[str, Any] = await generate_practice(summary=summary)
+                
         return JSONResponse(
             status_code=200,
             content={"summary": summary, "practice": practice, "token_sum": token_sum},
