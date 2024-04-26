@@ -6,6 +6,7 @@ from app.llm.anthropic import Anthropic
 from app.llm.base import LLMBaseModel, LLMConfig
 from app.llm.cohere import Cohere
 from app.llm.google_ai import GoogleAI
+from app.llm.llama3 import Llama3
 from app.llm.open_ai import OpenAI
 
 
@@ -18,6 +19,7 @@ class LLMType(StrEnum):
     CLAUDE_INSTANT_1 = "claude-instant-1.2"
     COHERE_COMMAND_R = "command-r"
     COHERE_COMMAND_R_PLUS = "command-r-plus"
+    LLAMA3 = "llama3"
 
     def default_config(self) -> LLMConfig:
         if self == LLMType.OPENAI_GPT4_TURBO:
@@ -51,6 +53,11 @@ class LLMType(StrEnum):
                 max_tokens=4000,
             )
         elif self == LLMType.COHERE_COMMAND_R_PLUS:
+            return LLMConfig(
+                temperature=1,
+                max_tokens=4000,
+            )
+        elif self == LLMType.LLAMA3:
             return LLMConfig(
                 temperature=1,
                 max_tokens=4000,
@@ -97,6 +104,10 @@ class LLM:
                 )
             case LLMType.COHERE_COMMAND_R_PLUS:
                 self._model = Cohere(
+                    model_name=model_type.value, model_config=model_config
+                )
+            case LLMType.LLAMA3:
+                self._model = Llama3(
                     model_name=model_type.value, model_config=model_config
                 )
 

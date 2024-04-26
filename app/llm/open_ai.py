@@ -29,5 +29,4 @@ class OpenAI(LLMBaseModel):
         ]
         log.info(f"Sending messages to OpenAI")
         response = (await self._model.ainvoke(messages)).content
-        print(response)
         return response

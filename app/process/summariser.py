@@ -18,6 +18,7 @@ from app.prompts.summariser.cohere import (
 from app.prompts.summariser.google_ai import (
     generate_google_ai_summariser_system_message,
     generate_google_ai_summariser_user_message)
+from app.prompts.summariser.llama3 import generate_llama3_summariser_system_message, generate_llama3_summariser_user_message
 from app.prompts.summariser.open_ai import (
     generate_open_ai_summariser_system_message,
     generate_open_ai_summariser_user_message)
@@ -54,6 +55,8 @@ class Summariser:
                 return generate_cohere_summariser_system_message()
             case LLMType.COHERE_COMMAND_R_PLUS:
                 return generate_cohere_summariser_system_message()
+            case LLMType.LLAMA3:
+                return generate_llama3_summariser_system_message()
 
     def generate_user_message(self, conversation: Conversation) -> str:
         match self._llm_type:
@@ -82,7 +85,13 @@ class Summariser:
                     conversation=conversation
                 )
             case LLMType.COHERE_COMMAND_R_PLUS:
-                return generate_cohere_summariser_user_message()
+                return generate_cohere_summariser_user_message(
+                    conversation=conversation
+                )
+            case LLMType.LLAMA3:
+                return generate_llama3_summariser_user_message(
+                    conversation=conversation
+                )
 
     def pre_process(
         self, conversation_dict: dict[str, Any]

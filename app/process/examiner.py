@@ -15,6 +15,7 @@ from app.prompts.examiner.cohere import (
 from app.prompts.examiner.google_ai import (
     generate_google_ai_examiner_system_message,
     generate_google_ai_examiner_user_message)
+from app.prompts.examiner.llama3 import generate_llama3_examiner_system_message, generate_llama3_examiner_user_message
 from app.prompts.examiner.open_ai import (
     generate_open_ai_examiner_system_message,
     generate_open_ai_examiner_user_message)
@@ -47,6 +48,8 @@ class Examiner:
                 return generate_cohere_examiner_system_message()
             case LLMType.COHERE_COMMAND_R_PLUS:
                 return generate_cohere_examiner_system_message()
+            case LLMType.LLAMA3:
+                return generate_llama3_examiner_system_message()
 
     def generate_user_message(self, topic: str, summary_chunk: str) -> str:
         match self._llm_type:
@@ -78,6 +81,8 @@ class Examiner:
                 return generate_cohere_examiner_user_message(
                     topic=topic, summary_chunk=summary_chunk
                 )
+            case LLMType.LLAMA3:
+                return generate_llama3_examiner_user_message()
 
     async def examine(self, topic: str, summary_chunk: str) -> tuple[str, str, str]:
         """This method generates a practice question and answer for a given topic and summary chunk.

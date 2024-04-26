@@ -62,4 +62,4 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
             status_code=200,
             content={"summary": summary, "practice": practice, "token_sum": token_sum},
         )
-    raise HTTPException(status_code=400, detail=str(e))
+    raise HTTPException(status_code=400, detail="Failed to generate notes completely.")
