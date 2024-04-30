@@ -128,6 +128,14 @@ POST_PROCESS_INVALID_DATA = [
         "Some random text",
         LLMType.CLAUDE_3_SONNET,
     ),
+    (
+        "```python\ndef test():\n# TODO: Add the missing line(s) below.\nprint('Hello')```python\ndef test():\nprint('Hello')\nprint('Hello')```",
+        LLMType.COHERE_COMMAND_R,
+    ),
+    (
+        "```python\ndef test():\n# TODO: Add the missing line(s) below.```python\ndef test():\nprint('Hello')```",
+        LLMType.COHERE_COMMAND_R,
+    ),
 ]
 
 
