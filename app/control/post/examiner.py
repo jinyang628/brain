@@ -53,6 +53,7 @@ def _verify_expected_similarity_and_difference(question: str, answer: str) -> tu
     q_index = 0
     a_index = 0
 
+    only_comments: bool = True
     # Loop through each line until we run out of lines in question
     while q_index < len(question_lines):
         if "TODO" in question_lines[q_index]:
@@ -67,9 +68,14 @@ def _verify_expected_similarity_and_difference(question: str, answer: str) -> tu
 
             # Check for matching lines strictly after TODO
             while a_index < len(answer_lines) and question_lines[q_index] != answer_lines[a_index]:
+                curr_answer_line: str = answer_lines[a_index].strip()
+                if not (curr_answer_line.startswith("#") or curr_answer_line.startswith("//") or curr_answer_line == ""):
+                    only_comments = False
                 a_index += 1  # Skip non-matching lines in the answer until a match is found
 
             if a_index < len(answer_lines) and question_lines[q_index] == answer_lines[a_index]:
+                if only_comments:
+                    raise ValueError("The user input section contains only comments.")
                 q_index += 1
                 a_index += 1  # Increment both to continue matching
             else:

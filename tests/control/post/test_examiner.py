@@ -1,7 +1,7 @@
 import pytest
 
 from app.control.post.examiner import (_determine_question_and_answer,
-                                       _extract_code, post_process)
+                                       _extract_code, _verify_expected_similarity_and_difference, post_process)
 from app.control.post.summariser import _remove_output_wrapper
 from app.exceptions.exception import LogicError
 from app.llm.model import LLMType
@@ -191,9 +191,77 @@ assert model.validate()
 # Property testing - Check if the model has the expected properties
 assert model.name == "John"
 assert model.age == 30
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+# TODO: Add the missing line(s) below.
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
 """
     ),
     (
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+# TODO: Add the missing line(s) below.
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
+""",
 """
 import pydantic
 
@@ -259,6 +327,132 @@ assert model.validate()
 # Property testing - Check if the model has the expected properties
 assert model.name == "John"
 assert model.age == 30
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+# TODO: Add the missing line(s) below.
+""",
+"""
+import pydantic
+
+class ExampleModel(pydantic.BaseModel):
+    name: str
+    age: int
+
+# Create a model instance
+model = ExampleModel(name="John", age=30)
+
+# Validation testing - Check if the model is valid
+assert model.validate()
+
+# Property testing - Check if the model has the expected properties
+assert model.name == "John"
+assert model.age == 30
+"""
+    ),
+    (
+"""
+# Initialize an empty list to store the structured data
+data = []
+
+# Iterate over the data points
+for data_point in data_points:
+    # TODO: Add the missing line(s) below.
+    data.append({'id': data_point['id'], 'value': data_point['value']})
+
+# Construct a DataFrame from the list
+df = pd.DataFrame(data)
+
+""",
+"""
+# Initialize an empty list to store the structured data
+data = []
+
+# Iterate over the data points
+for data_point in data_points:
+    # Append a structured data (e.g., dictionary) to the list
+    do_something_productive()
+    data.append({'id': data_point['id'], 'value': data_point['value']})
+
+# Construct a DataFrame from the list
+df = pd.DataFrame(data)
+
+""",
+"""
+# Initialize an empty list to store the structured data
+data = []
+
+# Iterate over the data points
+for data_point in data_points:
+    # TODO: Add the missing line(s) below.
+    data.append({'id': data_point['id'], 'value': data_point['value']})
+
+# Construct a DataFrame from the list
+df = pd.DataFrame(data)
+
+""",
+"""
+# Initialize an empty list to store the structured data
+data = []
+
+# Iterate over the data points
+for data_point in data_points:
+    # Append a structured data (e.g., dictionary) to the list
+    do_something_productive()
+    data.append({'id': data_point['id'], 'value': data_point['value']})
+
+# Construct a DataFrame from the list
+df = pd.DataFrame(data)
+
 """
     )
 ]
+
+@pytest.mark.parametrize("question, answer, expected_returned_question, expected_returned_answer", VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_VALID_DATA)
+def test_valid_verify_expected_similarity_and_difference(question, answer, expected_returned_question, expected_returned_answer):
+    assert _verify_expected_similarity_and_difference(question=question, answer=answer) == (expected_returned_question, expected_returned_answer)
+    
+VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_INVALID_DATA = [
+    (
+"""
+# Initialize an empty list to store the structured data
+data = []
+
+# Iterate over the data points
+for data_point in data_points:
+    # TODO: Add the missing line(s) below.
+    data.append({'id': data_point['id'], 'value': data_point['value']})
+
+# Construct a DataFrame from the list
+df = pd.DataFrame(data)
+
+""",
+"""
+# Initialize an empty list to store the structured data
+data = []
+
+# Iterate over the data points
+for data_point in data_points:
+    # Append a structured data (e.g., dictionary) to the list
+    data.append({'id': data_point['id'], 'value': data_point['value']})
+
+# Construct a DataFrame from the list
+df = pd.DataFrame(data)
+
+""",
+    )
+]
+
+@pytest.mark.parametrize("question, answer", VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_INVALID_DATA)
+def test_invalid_verify_expected_similarity_and_difference(question, answer):
+    with pytest.raises(ValueError):
+        _verify_expected_similarity_and_difference(question=question, answer=answer)
