@@ -7,7 +7,7 @@ from app.llm.base import LLMBaseModel, LLMConfig
 from app.llm.cohere import Cohere
 from app.llm.google_ai import GoogleAI
 from app.llm.llama3 import Llama3
-from app.llm.open_ai import OpenAI
+from app.llm.open_ai import OpenAi
 
 
 class LLMType(StrEnum):
@@ -25,12 +25,12 @@ class LLMType(StrEnum):
         if self == LLMType.OPENAI_GPT4_TURBO:
             return LLMConfig(
                 temperature=1,
-                max_tokens=4096,
+                max_tokens=3000,
             )
         elif self == LLMType.OPENAI_GPT3_5:
             return LLMConfig(
                 temperature=1,
-                max_tokens=4096,
+                max_tokens=3000,
             )
         elif self == LLMType.GEMINI_PRO:
             return LLMConfig(
@@ -79,11 +79,11 @@ class LLM:
         model_config: LLMConfig = model_config or model_type.default_config()
         match model_type:
             case LLMType.OPENAI_GPT4_TURBO:
-                self._model = OpenAI(
+                self._model = OpenAi(
                     model_name=model_type.value, model_config=model_config
                 )
             case LLMType.OPENAI_GPT3_5:
-                self._model = OpenAI(
+                self._model = OpenAi(
                     model_name=model_type.value, model_config=model_config
                 )
             case LLMType.GEMINI_PRO:

@@ -4,11 +4,12 @@ from typing import Any
 from app.config import InferenceConfig
 from app.control.post.summariser import post_process
 from app.control.pre.summariser import pre_process
-from app.exceptions.exception import LogicError
+from app.exceptions.exception import InferenceFailure, LogicError
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
 from app.models.conversation import Conversation
 from app.models.task import Task
+from app.prompts.config import PromptMessageConfig
 from app.prompts.summariser.anthropic import (
     generate_anthropic_summariser_system_message,
     generate_anthropic_summariser_user_message)
@@ -113,29 +114,32 @@ class Summariser:
         log.info(f"Token sum of conversation: {token_sum}")
         return conversation_lst, token_sum
 
-    async def summarise(self, conversation: Conversation) -> str:
+    async def summarise(self, conversation: Conversation) -> dict[str, str]:
         """Invokes the LLM to generate a summary of the conversation.
 
         Args:
             conversation (Conversation): The conversation to be summarised.
             
         Returns:
-            str: A string containing the summary of the conversation.
+            dict[str, str]: A dictionary containing the topic-content of the summary
         """
         system_message: str = self.generate_system_message()
         user_message: str = self.generate_user_message(conversation=conversation)
 
         try:
-            response: str = await self._model.send_message(
-                system_message=system_message, user_message=user_message
+            topic, content= await self._model.send_message(
+                system_message=system_message, user_message=user_message, config=PromptMessageConfig.SUMMARY
             )
             processed_summary: dict[str, str] = post_process(
-                summary=response, llm_type=self._llm_type
+                topic=topic, content=content, llm_type=self._llm_type
             )
             log.info(f"Processed Summary: {processed_summary}")
             return processed_summary
         except LogicError as e:
             log.error(f"Logic error occurred while summarizing conversation: {e}")
+            raise e
+        except InferenceFailure as e:
+            log.error(f"Inference failure occurred while summarizing conversation: {e}")
             raise e
         except Exception as e:
             log.error(f"Error occurred while summarizing conversation: {e}")

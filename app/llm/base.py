@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel
 
+from app.prompts.config import PromptMessageConfig
+
 
 class LLMConfig(BaseModel):
     temperature: float
@@ -30,6 +32,7 @@ class LLMBaseModel(ABC):
         self,
         system_message: str,
         user_message: str,
+        config: PromptMessageConfig
     ) -> str:
         """Sends a message to the AI and returns the response."""
         pass
