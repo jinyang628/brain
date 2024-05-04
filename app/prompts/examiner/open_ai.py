@@ -9,32 +9,20 @@ You will be given a topic and a summary of a technical conversation. Write a blo
 
 You must adhere to the following rules
 1. Generate two versions of the single block of code. One version has all the logic fully implemented. The second version is a replica of the first, except that 1-3 lines of code are intentionally left blank.
-2. Indicate with '{TODO_MARKER}' in place of the lines of code that are intentionally left blank.
+2. Indicate with a comment '{TODO_MARKER}' in place of the lines of code that are intentionally left blank.
 3. Enclose the block of code in ``` and specify the language at the start of the code block.
 
-Here is an example of the expected output format:
+An example of the expected output is as follows:
 
-Practice:
-```python
-def contains_greater_than_five():
-    # This code checks if at least one item in a list is greater than 5.
-    my_list = [1, 2, 3, 4, 5, 6]
-    {TODO_MARKER}
-        print("At least one item is greater than 5.")
-    else:
-        print("No item is greater than 5.")
-```
+Question:
+def add(a: number, b: number):
+    # {TODO_MARKER}
 
 Answer:
-```python
-def contains_greater_than_five():
-    # This code checks if at least one item in a list is greater than 5.
-    my_list = [1, 2, 3, 4, 5, 6]
-    if any(x > 5 for x in my_list):
-        print("At least one item is greater than 5.")
-    else:
-        print("No item is greater than 5.")
-```
+def add(a: number, b: number):
+    return a + b
+    
+Language: Python
 """
     return system_message
 

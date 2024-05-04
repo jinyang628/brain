@@ -7,6 +7,7 @@ import os
 from app.exceptions.exception import InferenceFailure
 from app.llm.base import LLMBaseModel, LLMConfig
 from app.prompts.config import PromptMessageConfig
+from app.prompts.examiner.functions import PracticeFunctions, get_practice_functions
 from app.prompts.summariser.functions import get_summary_functions, SummaryFunctions
 
 log = logging.getLogger(__name__)
@@ -48,7 +49,26 @@ class OpenAi(LLMBaseModel):
                     log.error(f"Error processing or receiving OpenAI response: {str(e)}")
                     raise InferenceFailure("Error processing OpenAI response")
             case PromptMessageConfig.PRACTICE:
-                pass
+                response = self._client.chat.completions.create(
+                    model = self._model_name,
+                    messages = [
+                        {"role": "system", "content": system_message},
+                        {"role": "user", "content": user_message}
+                    ],
+                    functions=get_practice_functions(),
+                    function_call = {"name": PracticeFunctions.GET_PRACTICE}
+                )
+                try:
+                    json_response: dict[str, str] = json.loads(response.choices[0].message.function_call.arguments)
+                    log.info(f"Practice: {json_response}")
+                    language: str = json_response[PracticeFunctions.LANGUAGE]
+                    question: str = json_response[PracticeFunctions.QUESTION]
+                    answer: str = json_response[PracticeFunctions.ANSWER]
+                    log.info(f"Language: {language}, Question: {question}, Answer: {answer}")
+                    return (language, question, answer)
+                except Exception as e:
+                    log.error(f"Error processing or receiving OpenAI response: {str(e)}")
+                    raise InferenceFailure("Error processing OpenAI response")
             case _:
                 raise InferenceFailure("Invalid config type")
             

@@ -6,6 +6,7 @@ from app.exceptions.exception import LogicError
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
 from app.models.task import Task
+from app.prompts.config import PromptMessageConfig
 from app.prompts.examiner.anthropic import (
     generate_anthropic_examiner_system_message,
     generate_anthropic_examiner_user_message)
@@ -100,11 +101,11 @@ class Examiner:
         )
 
         try:
-            response: str = await self._model.send_message(
-                system_message=system_message, user_message=user_message
+            language, question, answer = await self._model.send_message(
+                system_message=system_message, user_message=user_message, config=PromptMessageConfig.PRACTICE
             )
             language, question, answer = post_process(
-                practice=response, llm_type=self._llm_type
+                language=language, question=question, answer=answer
             )
             return language, question, answer
         except LogicError as e:
