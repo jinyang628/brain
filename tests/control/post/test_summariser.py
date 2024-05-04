@@ -1,72 +1,29 @@
 import pytest
 
-from app.control.post.summariser import (_extract_info,
-                                         _reject_unlikely_topics,
-                                         _remove_header,
-                                         _remove_output_wrapper, post_process)
-from app.llm.model import LLMType
+from app.control.post.summariser import (
+    _reject_unlikely_topics,
+    post_process
+)
+from app.exceptions.exception import LogicError
 
 POST_PROCESS_VALID_DATA = [
     (
-        """
-**Key Ideas:** 
-1. **Topic1 is good**: This is the summary of the first topic.
- 
-2. **Topic2 is better**: This is the summary of the second topic. 
-
-3. **Topic3 is awesome**: This is the summary of the third topic.
-""",
-        LLMType.GEMINI_PRO,
+        "Good topic",
+        "A good summary",
         {
-            "Topic1 is good": "This is the summary of the first topic.",
-            "Topic2 is better": "This is the summary of the second topic.",
-            "Topic3 is awesome": "This is the summary of the third topic.",
-        },
-    ),
-    (
-        """
-**Key Ideas:** 
-1. **Topic1 is good**: This is the summary of the first topic.
- 
-2. **Topic2 is better**: This is the summary of the second topic. 
-
-3. **Topic3 is awesome**: This is the summary of the third topic.
-</output>
-""",
-        LLMType.CLAUDE_3_SONNET,
-        {
-            "Topic1 is good": "This is the summary of the first topic.",
-            "Topic2 is better": "This is the summary of the second topic.",
-            "Topic3 is awesome": "This is the summary of the third topic.",
-        },
-    ),
-    (
-        """
-**Key Ideas:** 
-1. **Topic1 is good**: This is the summary of the first topic.
- 
-2. **Topic2 is better**: This is the summary of the second topic. 
-
-3. **Topic3 is awesome**: This is the summary of the third topic.
-</output>
-""",
-        LLMType.CLAUDE_INSTANT_1,
-        {
-            "Topic1 is good": "This is the summary of the first topic.",
-            "Topic2 is better": "This is the summary of the second topic.",
-            "Topic3 is awesome": "This is the summary of the third topic.",
-        },
-    ),
+            "Good topic": "A good summary"
+        }
+    )
 ]
 
 
-@pytest.mark.parametrize("input_str, llm_type, expected", POST_PROCESS_VALID_DATA)
-def test_post_process_valid(input_str, llm_type, expected):
-    assert post_process(summary=input_str, llm_type=llm_type) == expected
+@pytest.mark.parametrize("topic, content, expected", POST_PROCESS_VALID_DATA)
+def test_post_process_valid(topic, content, expected):
+    assert post_process(topic=topic, content=content) == expected
 
 
 POST_PROCESS_INVALID_DATA = [
-    (123),
+    (123, "content"),
     (
         [
             """
@@ -75,86 +32,35 @@ POST_PROCESS_INVALID_DATA = [
             2. **Topic2**: This is the summary of the second topic. 
             3. **Topic3**: This is the summary of the third topic.
             """
-        ]
+        ],
+        "GOOD CONTENT"
     ),
 ]
 
 
-@pytest.mark.parametrize("input_str", POST_PROCESS_INVALID_DATA)
-def test_post_process_invalid(input_str):
-    with pytest.raises(TypeError):
-        post_process(summary=input_str)
+@pytest.mark.parametrize("topic, content", POST_PROCESS_INVALID_DATA)
+def test_post_process_invalid(topic, content):
+    with pytest.raises(LogicError):
+        post_process(topic=topic, content=content)
 
 
-REJECT_UNLIKELY_TOPICS_ACCEPTED_DATA = [({"Valid Topic": "Summary"})]
+REJECT_UNLIKELY_TOPICS_ACCEPTED_DATA = [
+    ("Good topic that is long enough")
+]
 
 
-@pytest.mark.parametrize("input_dict", REJECT_UNLIKELY_TOPICS_ACCEPTED_DATA)
-def test_reject_unlikely_topics_mixed(input_dict):
-    assert _reject_unlikely_topics(input_dict) == None
+@pytest.mark.parametrize("topic", REJECT_UNLIKELY_TOPICS_ACCEPTED_DATA)
+def test_reject_unlikely_topics_mixed(topic):
+    assert _reject_unlikely_topics(topic=topic) == None
 
 
-REJECT_UNLIKELY_TOPICS_REJECTED_DATA = [({"Topic": "Summary"}), ({"": "Summary"})]
+REJECT_UNLIKELY_TOPICS_REJECTED_DATA = [
+    ("Topic"), 
+    ("")
+]
 
 
-@pytest.mark.parametrize("input_dict", REJECT_UNLIKELY_TOPICS_REJECTED_DATA)
-def test_reject_unlikely_topics_empty(input_dict):
+@pytest.mark.parametrize("topic", REJECT_UNLIKELY_TOPICS_REJECTED_DATA)
+def test_reject_unlikely_topics_invalid(topic):
     with pytest.raises(ValueError):
-        _reject_unlikely_topics(input_dict)
-
-
-REJECT_UNLIKELY_TOPICS_INVALID_DATA = [(123), ([{"Topic": "Summary"}]), (None)]
-
-
-@pytest.mark.parametrize("input_dict", REJECT_UNLIKELY_TOPICS_INVALID_DATA)
-def test_reject_unlikely_topics_invalid(input_dict):
-    with pytest.raises(TypeError):
-        _reject_unlikely_topics(input_dict)
-
-
-REMOVE_HEADER_VALID_DATA = [
-    (
-        """**Key Ideas:** 
-        1. **Topic1 happy**: This is the summary of the first topic.
-        2. **Topic2 sad**: This is the summary of the second topic.""",
-        """1. **Topic1 happy**: This is the summary of the first topic.
-        2. **Topic2 sad**: This is the summary of the second topic.""",
-    )
-]
-
-
-@pytest.mark.parametrize("input_str, expected", REMOVE_HEADER_VALID_DATA)
-def test_remove_header_valid(input_str, expected):
-    assert _remove_header(input_str) == expected
-
-
-EXTRACT_INFO_VALID_DATA = [
-    (
-        """
-1. **List Indentation Fix**: The `ResponseProcessor` class is responsible for processing the response based on `fact_id_process_type` and `query_process_type`. It can be customized to remove additional indentation from lists of strings in the JSON output. 
-        
-2. **Regex Complexity**: Regular expressions can be computationally expensive, especially for complex patterns, large texts, or when they involve backtracking.
-        """,
-        {
-            "List Indentation Fix": "The `ResponseProcessor` class is responsible for processing the response based on `fact_id_process_type` and `query_process_type`. It can be customized to remove additional indentation from lists of strings in the JSON output.",
-            "Regex Complexity": "Regular expressions can be computationally expensive, especially for complex patterns, large texts, or when they involve backtracking.",
-        },
-    )
-]
-
-
-@pytest.mark.parametrize("input_str, expected", EXTRACT_INFO_VALID_DATA)
-def test_extract_info_valid(input_str, expected):
-    assert _extract_info(input_str) == expected
-
-
-REMOVE_OUTPUT_WRAPPER_DATA = [
-    ("This is the output. </output>", "This is the output."),
-    ("This is the output. </output>\nProbably rubbish", "This is the output."),
-    ("This is the output. </output>testetstest", "This is the output."),
-]
-
-
-@pytest.mark.parametrize("input_str, expected", REMOVE_OUTPUT_WRAPPER_DATA)
-def test_remove_output_wrapper(input_str, expected):
-    assert _remove_output_wrapper(input_str) == expected
+        _reject_unlikely_topics(topic=topic)

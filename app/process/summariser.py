@@ -131,7 +131,7 @@ class Summariser:
                 system_message=system_message, user_message=user_message, config=PromptMessageConfig.SUMMARY
             )
             processed_summary: dict[str, str] = post_process(
-                topic=topic, content=content, llm_type=self._llm_type
+                topic=topic, content=content
             )
             log.info(f"Processed Summary: {processed_summary}")
             return processed_summary
