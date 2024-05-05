@@ -5,7 +5,8 @@ class PracticeFunctions(StrEnum):
     GET_PRACTICE = "get_practice"
     LANGUAGE = "language"
     QUESTION = "question"
-    ANSWER = "answer"
+    HALF_COMPLETED_CODE = "half_completed_code"
+    FULLY_COMPLETED_CODE = "fully_completed_code"
     
 def get_practice_functions() -> list[dict[str, str]]:
     practice_functions: list[dict[str, Any]]= [
@@ -17,18 +18,22 @@ def get_practice_functions() -> list[dict[str, str]]:
                 "properties": {
                     PracticeFunctions.QUESTION: {
                         "type": "string",
-                        "description": "The half-completed code block with the TODO marker in place of the missing code."
+                        "description": "The coding question that is formulated based on the summary."
                     },
-                    PracticeFunctions.ANSWER: {
+                    PracticeFunctions.HALF_COMPLETED_CODE: {
                         "type": "string",
-                        "description": "The fully-completed code block with the missing parts in the annotated by the TODO marker filled."
+                        "description": "The half-completed code with the TODO marker in place of the missing code."
+                    },
+                    PracticeFunctions.FULLY_COMPLETED_CODE: {
+                        "type": "string",
+                        "description": "The fully-completed code, with the missing parts annotated by the TODO marker filled."
                     },
                     PracticeFunctions.LANGUAGE: {
                         "type": "string",
                         "description": "The language of the practice questions."
                     }
                 },
-                "required": [PracticeFunctions.QUESTION, PracticeFunctions.ANSWER, PracticeFunctions.LANGUAGE]
+                "required": [PracticeFunctions.QUESTION, PracticeFunctions.HALF_COMPLETED_CODE, PracticeFunctions.FULLY_COMPLETED_CODE, PracticeFunctions.LANGUAGE]
             }
         }
     ]

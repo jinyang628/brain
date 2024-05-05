@@ -406,7 +406,7 @@ df = pd.DataFrame(data)
 
 @pytest.mark.parametrize("question, answer, expected_returned_question, expected_returned_answer", VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_VALID_DATA)
 def test_valid_verify_expected_similarity_and_difference(question, answer, expected_returned_question, expected_returned_answer):
-    assert _verify_expected_similarity_and_difference(question=question, answer=answer) == (expected_returned_question, expected_returned_answer)
+    assert _verify_expected_similarity_and_difference(half_completed_code=question, fully_completed_code=answer) == (expected_returned_question, expected_returned_answer)
     
 VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_INVALID_DATA = [
     (
@@ -442,4 +442,4 @@ df = pd.DataFrame(data)
 @pytest.mark.parametrize("question, answer", VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_INVALID_DATA)
 def test_invalid_verify_expected_similarity_and_difference(question, answer):
     with pytest.raises(ValueError):
-        _verify_expected_similarity_and_difference(question=question, answer=answer)
+        _verify_expected_similarity_and_difference(half_completed_code=question, fully_completed_code=answer)

@@ -31,7 +31,8 @@ async def generate_practice(
                 "summary_chunk": summary_chunk,
                 "language": result[0],
                 "question": result[1],
-                "answer": result[2]
+                "half_completed_code": result[2],
+                "fully_completed_code": result[3],
             }
         )
     if failures:
@@ -56,13 +57,10 @@ async def _generate(
     config = InferenceConfig()
     examiner = Examiner(config=config)
     try:
-        language, question, answer = await examiner.examine(
+        language, question, half_completed_code, fully_completed_code = await examiner.examine(
             topic=topic, summary_chunk=summary_chunk
         )
-        log.info(f"Language: {language}")
-        log.info(f"Question: {question}")
-        log.info(f"Answer: {answer}")
-        return language, question, answer
+        return language, question, half_completed_code, fully_completed_code
     except LogicError as e:
         log.error(
             f"Logic error occurred while generating practice (attempt {attempt}/{max_attempts}): {e}"

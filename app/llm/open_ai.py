@@ -63,9 +63,10 @@ class OpenAi(LLMBaseModel):
                     log.info(f"Practice: {json_response}")
                     language: str = json_response[PracticeFunctions.LANGUAGE]
                     question: str = json_response[PracticeFunctions.QUESTION]
-                    answer: str = json_response[PracticeFunctions.ANSWER]
-                    log.info(f"Language: {language}, Question: {question}, Answer: {answer}")
-                    return (language, question, answer)
+                    half_completed_code: str = json_response[PracticeFunctions.HALF_COMPLETED_CODE]
+                    fully_completed_code: str = json_response[PracticeFunctions.FULLY_COMPLETED_CODE]
+                    log.info(f"Language: {language}, Question: {question}, Half-completed-code: {half_completed_code}, Fully-completed-code: {fully_completed_code}")
+                    return (language, question, half_completed_code, fully_completed_code)
                 except Exception as e:
                     log.error(f"Error processing or receiving OpenAI response: {str(e)}")
                     raise InferenceFailure("Error processing OpenAI response")
