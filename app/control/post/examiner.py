@@ -28,6 +28,7 @@ def post_process(language: str, question: str, half_completed_code: str, fully_c
             raise TypeError(f"Fully-completed code is not a string: {fully_completed_code}")
         if not isinstance(language, str):
             raise TypeError(f"Language is not a string: {language}")
+        half_completed_code = _verify_todo_marker_presence(half_completed_code=half_completed_code)
         half_completed_code, fully_completed_code = _verify_expected_similarity_and_difference(half_completed_code=half_completed_code, fully_completed_code=fully_completed_code)
         return (language, question, half_completed_code, fully_completed_code)
     except (ValueError, TypeError) as e:
@@ -111,6 +112,19 @@ def _remove_output_wrapper(text: str) -> str:
         )
     return text[:index].strip()
 
+
+def _verify_todo_marker_presence(half_completed_code: str) -> str:
+    """Verifies that the text contains the {TODO_MARKER}.
+    
+    Args:
+        text (str): The text to be processed.
+    
+    Returns:
+        str: The text with the {TODO_MARKER} if it is present.
+    """
+    if TODO_MARKER not in half_completed_code:
+        raise ValueError(f"The text does not contain the placeholder {TODO_MARKER}.")
+    return half_completed_code
 
 def _determine_question_and_answer(block_1: str, block_2: str) -> tuple[str, str]:
     """Determines which is the question and answer block by checking which block contains the {TODO_MARKER}. Returns the question and answer in order.

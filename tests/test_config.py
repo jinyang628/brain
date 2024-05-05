@@ -12,5 +12,5 @@ def test_inference_config_initialization(config):
     """Test the default initialization of InferenceConfig."""
     assert Task.SUMMARISE in config.llm_type
     assert Task.PRACTICE in config.llm_type
-    assert config.llm_type[Task.SUMMARISE] == LLMType.GEMINI_PRO
+    assert config.llm_type[Task.SUMMARISE] == LLMType.OPENAI_GPT3_5
     assert config.llm_type[Task.PRACTICE] == LLMType.OPENAI_GPT3_5
