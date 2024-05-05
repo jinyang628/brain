@@ -30,7 +30,7 @@ def get_practice_functions() -> list[dict[str, str]]:
                     },
                     PracticeFunctions.LANGUAGE: {
                         "type": "string",
-                        "description": "The language of the practice questions."
+                        "description": "The programming language used in the practice question."
                     }
                 },
                 "required": [PracticeFunctions.QUESTION, PracticeFunctions.HALF_COMPLETED_CODE, PracticeFunctions.FULLY_COMPLETED_CODE, PracticeFunctions.LANGUAGE]
