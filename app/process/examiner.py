@@ -2,7 +2,7 @@ import logging
 
 from app.config import InferenceConfig
 from app.control.post.examiner import post_process
-from app.exceptions.exception import LogicError
+from app.exceptions.exception import InferenceFailure, LogicError
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
 from app.models.task import Task
@@ -110,6 +110,9 @@ class Examiner:
             return language, question, half_completed_code, fully_completed_code
         except LogicError as e:
             log.error(f"Logic error occurred while generating practices off the summary: {e}")
+            raise e
+        except InferenceFailure as e:
+            log.error(f"Inference failure occurred while generating practices off the summary: {e}")
             raise e
         except Exception as e:
             log.error(f"Unexpected error occurred while generating practices off the summary: {e}")

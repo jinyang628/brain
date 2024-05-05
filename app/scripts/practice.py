@@ -65,6 +65,10 @@ async def _generate(
         log.error(
             f"Logic error occurred while generating practice (attempt {attempt}/{max_attempts}): {e}"
         )
+    except InferenceFailure as e:
+        log.error(
+            f"Inference failure occurred while generating practice (attempt {attempt}/{max_attempts}): {e}"
+        )
 
     if attempt < max_attempts:
         log.info(f"Retrying practice generation for topic: {topic}...")
