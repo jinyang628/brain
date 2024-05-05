@@ -2,7 +2,6 @@ import pytest
 
 from app.control.post.examiner import (_determine_question_and_answer,
                                        _extract_code, _verify_expected_similarity_and_difference, post_process)
-from app.control.post.summariser import _remove_output_wrapper
 from app.exceptions.exception import LogicError
 from app.llm.model import LLMType
 
@@ -143,18 +142,6 @@ POST_PROCESS_INVALID_DATA = [
 def test_invalid_post_process(practice, llm_type):
     with pytest.raises(LogicError):
         post_process(practice=practice, llm_type=llm_type)
-
-
-REMOVE_OUTPUT_WRAPPER_DATA = [
-    ("This is the output. </output>", "This is the output."),
-    ("This is the output. </output>\nProbably rubbish", "This is the output."),
-    ("This is the output. </output>testetstest", "This is the output."),
-]
-
-
-@pytest.mark.parametrize("input_str, expected", REMOVE_OUTPUT_WRAPPER_DATA)
-def test_remove_output_wrapper(input_str, expected):
-    assert _remove_output_wrapper(input_str) == expected
 
 VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_VALID_DATA = [
     (
@@ -419,7 +406,7 @@ df = pd.DataFrame(data)
 
 @pytest.mark.parametrize("question, answer, expected_returned_question, expected_returned_answer", VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_VALID_DATA)
 def test_valid_verify_expected_similarity_and_difference(question, answer, expected_returned_question, expected_returned_answer):
-    assert _verify_expected_similarity_and_difference(question=question, answer=answer) == (expected_returned_question, expected_returned_answer)
+    assert _verify_expected_similarity_and_difference(half_completed_code=question, fully_completed_code=answer) == (expected_returned_question, expected_returned_answer)
     
 VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_INVALID_DATA = [
     (
@@ -455,4 +442,4 @@ df = pd.DataFrame(data)
 @pytest.mark.parametrize("question, answer", VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_INVALID_DATA)
 def test_invalid_verify_expected_similarity_and_difference(question, answer):
     with pytest.raises(ValueError):
-        _verify_expected_similarity_and_difference(question=question, answer=answer)
+        _verify_expected_similarity_and_difference(half_completed_code=question, fully_completed_code=answer)
