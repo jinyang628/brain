@@ -1,7 +1,7 @@
 import pytest
 
 from app.control.post.examiner import (_determine_question_and_answer,
-                                       _extract_code, _verify_expected_similarity_and_difference, post_process)
+                                       _extract_code, _verify_expected_similarity_and_difference, _verify_todo_marker_presence, post_process)
 from app.exceptions.exception import LogicError
 from app.llm.model import LLMType
 
@@ -65,83 +65,70 @@ def test_invalid_determine_question_and_answer(block_1, block_2):
 
 POST_PROCESS_VALID_DATA = [
     (
-        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```",
-        LLMType.GEMINI_PRO,
+        "python",
+        "Print hello",
+        "def test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.",
+        "def test():\nprint('Hello')```\n```python\ndef test():\nprint('Hello')",
         (
             "python",
-            "def test():\n# TODO: Add the missing line(s) below.",
-            "def test():\nprint('Hello')",
-        ),
+            "Print hello",
+            "def test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.",
+            "def test():\nprint('Hello')```\n```python\ndef test():\nprint('Hello')"
+        )
     ),
     (
-        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```</output>",
-        LLMType.CLAUDE_3_SONNET,
+        "javascript",
+        "Print hello",
+        "function test():\nprint('Hello')```\n```python\ndef test():\n// TODO: Add the missing line(s) below.",
+        "function test():\nprint('Hello')```\n```python\ndef test():\nprint('Hello')",
         (
-            "python",
-            "def test():\n# TODO: Add the missing line(s) below.",
-            "def test():\nprint('Hello')",
-        ),
-    ),
-    (
-        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```</output>",
-        LLMType.CLAUDE_INSTANT_1,
-        (
-            "python",
-            "def test():\n# TODO: Add the missing line(s) below.",
-            "def test():\nprint('Hello')",
-        ),
-    ),
-    (
-        "```python\ndef test():\n# TODO: Add the missing line(s) below.```\n```python\ndef test():\nprint('Hello')```",
-        LLMType.OPENAI_GPT3_5,
-        (
-            "python",
-            "def test():\n# TODO: Add the missing line(s) below.",
-            "def test():\nprint('Hello')",
-        ),
-    ),
-    (
-        "```python\ndef test():\n# TODO: Add the missing line(s) below.\nhappy()```\n```python\ndef test():\nprint('Hello')\nhappy()```",
-        LLMType.OPENAI_GPT4_TURBO,
-        (
-            "python",
-            "def test():\n# TODO: Add the missing line(s) below.\nhappy()",
-            "def test():\nprint('Hello')\nhappy()",
-        ),
-    ),
+            "javascript",
+            "Print hello",
+            "function test():\nprint('Hello')```\n```python\ndef test():\n// TODO: Add the missing line(s) below.",
+            "function test():\nprint('Hello')```\n```python\ndef test():\nprint('Hello')"
+        )
+    )
 ]
 
 
-@pytest.mark.parametrize("practice, llm_type, expected", POST_PROCESS_VALID_DATA)
-def test_valid_post_process(practice, llm_type, expected):
-    language, question, answer = post_process(practice=practice, llm_type=llm_type)
-    assert (language, question, answer) == expected
+@pytest.mark.parametrize("language, question, half_completed_code, fully_completed_code, expected", POST_PROCESS_VALID_DATA)
+def test_valid_post_process(language, question, half_completed_code, fully_completed_code, expected):
+    language, question, half_completed_code, fully_completed_code = post_process(language=language, question=question, half_completed_code=half_completed_code, fully_completed_code=fully_completed_code)
+    assert (language, question, half_completed_code, fully_completed_code) == expected
 
 
 POST_PROCESS_INVALID_DATA = [
     (
-        "Some random text",
-        LLMType.GEMINI_PRO,
+        True,
+        "Print hello",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\nprint('Hello')```",
     ),
     (
-        "Some random text",
-        LLMType.CLAUDE_3_SONNET,
+        "python",
+        123,
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\nprint('Hello')```",
     ),
     (
-        "```python\ndef test():\n# TODO: Add the missing line(s) below.\nprint('Hello')```python\ndef test():\nprint('Hello')\nprint('Hello')```",
-        LLMType.COHERE_COMMAND_R,
+        "python",
+        123,
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n```",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\nprint('Hello')```",
     ),
     (
-        "```python\ndef test():\n# TODO: Add the missing line(s) below.```python\ndef test():\nprint('Hello')```",
-        LLMType.COHERE_COMMAND_R,
-    ),
+        "python",
+        "Print hello",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef test():\n# TODO: Add the missing line(s) below.```",
+        "```python\ndef test():\nprint('Hello')```\n```python\ndef testing():\nprint('Hello')```",
+    )
 ]
 
 
-@pytest.mark.parametrize("practice, llm_type", POST_PROCESS_INVALID_DATA)
-def test_invalid_post_process(practice, llm_type):
+@pytest.mark.parametrize("language, question, half_completed_code, fully_completed_code", POST_PROCESS_INVALID_DATA)
+def test_invalid_post_process(language, question, half_completed_code, fully_completed_code):
     with pytest.raises(LogicError):
-        post_process(practice=practice, llm_type=llm_type)
+        post_process(language=language, question=question, half_completed_code=half_completed_code, fully_completed_code=fully_completed_code)
 
 VERIFY_EXPECTED_SIMILARITY_AND_DIFFERENCE_VALID_DATA = [
     (
@@ -443,3 +430,36 @@ df = pd.DataFrame(data)
 def test_invalid_verify_expected_similarity_and_difference(question, answer):
     with pytest.raises(ValueError):
         _verify_expected_similarity_and_difference(half_completed_code=question, fully_completed_code=answer)
+        
+VERIFY_TODO_MARKER_PRESENCE_VALID_DATA = [
+    (
+"""
+def test():
+    # TODO: Add the missing line(s) below.
+"""
+    ),
+    (
+"""
+function test(): boolean
+    // TODO: Add the missing line(s) below.
+"""
+    )
+]
+
+@pytest.mark.parametrize("half_completed_code", VERIFY_TODO_MARKER_PRESENCE_VALID_DATA)
+def test_valid_verify_todo_marker_presence(half_completed_code):
+    assert _verify_todo_marker_presence(half_completed_code=half_completed_code) == half_completed_code
+    
+VERIFY_TODO_MARKER_PRESENCE_INVALID_DATA = [
+    (
+"""
+def test():
+    # Add the missing line(s) below.
+"""
+    ),
+]
+
+@pytest.mark.parametrize("half_completed_code", VERIFY_TODO_MARKER_PRESENCE_INVALID_DATA)
+def test_invalid_verify_todo_marker_presence(half_completed_code):
+    with pytest.raises(ValueError):
+        _verify_todo_marker_presence(half_completed_code=half_completed_code)
