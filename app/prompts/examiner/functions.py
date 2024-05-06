@@ -18,7 +18,7 @@ def get_practice_functions() -> list[dict[str, str]]:
                 "properties": {
                     PracticeFunctions.QUESTION: {
                         "type": "string",
-                        "description": "The coding question that is formulated based on the summary."
+                        "description": "The coding question that is formulated based on the summary, with enough context and hints for the student to complete the code without ambiguity."
                     },
                     PracticeFunctions.HALF_COMPLETED_CODE: {
                         "type": "string",
