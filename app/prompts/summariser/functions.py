@@ -3,27 +3,61 @@ from typing import Any
 
 class SummaryFunctions(StrEnum):
     GET_SUMMARY = "get_summary"
+    
+    # Unique element to output 
     TOPIC = "topic"
-    CONTENT = "content"
+    GOAL = "goal"
+    OVERVIEW = "overview"
+
+    KEY_CONCEPTS = "key_concepts"
+    # List of tuples containing these 3 elements
+    KEY_CONCEPT_TITLE = "key_concept_header"
+    KEY_CONCEPT_CONTENT = "key_concept_content"
+    KEY_CONCEPT_CODE_EXAMPLE = "key_concept_code_example"
 
 def get_summary_functions() -> list[dict[str, Any]]:
     summary_functions: list[dict[str, Any]] = [
         {
             "name": SummaryFunctions.GET_SUMMARY,
-            "description": "Summarise the key ideas present in the model's response.",
+            "description": "Generate revision notes based on the key ideas present in the model's response.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     SummaryFunctions.TOPIC: {
                         "type": "string",
-                        "description": "The topic of the summary."
+                        "description": "The topic which the revision notes cover in fewer than 7 words."
                     },
-                    SummaryFunctions.CONTENT: {
+                    SummaryFunctions.GOAL: {
                         "type": "string",
-                        "description": "The content of the summary."
+                        "description": "The goal of the revision notes in one sentence. Students should achieve this goal after reading the notes."
+                    },
+                    SummaryFunctions.OVERVIEW: {
+                        "type": "string",
+                        "description": "A high-level summary of the key ideas present in the revision notes in one sentence."
+                    },
+                    SummaryFunctions.KEY_CONCEPTS: {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                SummaryFunctions.KEY_CONCEPT_TITLE: {
+                                    "type": "string",
+                                    "description": "The title of the key concept."
+                                },
+                                SummaryFunctions.KEY_CONCEPT_CONTENT: {
+                                    "type": "string",
+                                    "description": "The explanation of the key concept in one or two sentences."
+                                },
+                                SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE: {
+                                    "type": "string",
+                                    "description": "A short code example illustrating the key concept."
+                                }
+                            },
+                            "required": [SummaryFunctions.KEY_CONCEPT_TITLE, SummaryFunctions.KEY_CONCEPT_CONTENT, SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE]
+                        }
                     }
                 },
-                "required": [SummaryFunctions.TOPIC, SummaryFunctions.CONTENT], 
+                "required": [SummaryFunctions.TOPIC, SummaryFunctions.GOAL, SummaryFunctions.OVERVIEW, SummaryFunctions.KEY_CONCEPTS]
             }
         }
     ]

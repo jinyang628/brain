@@ -42,7 +42,7 @@ class Summariser:
 
     def generate_system_message(self) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4_TURBO:
+            case LLMType.OPENAI_GPT4:
                 return generate_open_ai_summariser_system_message()
             case LLMType.OPENAI_GPT3_5:
                 return generate_open_ai_summariser_system_message()
@@ -61,7 +61,7 @@ class Summariser:
 
     def generate_user_message(self, conversation: Conversation) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4_TURBO:
+            case LLMType.OPENAI_GPT4:
                 return generate_open_ai_summariser_user_message(
                     conversation=conversation
                 )
@@ -114,7 +114,7 @@ class Summariser:
         log.info(f"Token sum of conversation: {token_sum}")
         return conversation_lst, token_sum
 
-    async def summarise(self, conversation: Conversation) -> dict[str, str]:
+    async def summarise(self, conversation: Conversation) -> dict[str, Any]:
         """Invokes the LLM to generate a summary of the conversation.
 
         Args:
@@ -127,11 +127,11 @@ class Summariser:
         user_message: str = self.generate_user_message(conversation=conversation)
 
         try:
-            topic, content= await self._model.send_message(
+            topic, goal, overview, key_concepts_lst = await self._model.send_message(
                 system_message=system_message, user_message=user_message, config=PromptMessageConfig.SUMMARY
             )
-            processed_summary: dict[str, str] = post_process(
-                topic=topic, content=content
+            processed_summary: dict[str, Any] = post_process(
+                topic=topic, goal=goal, overview=overview, key_concepts_lst=key_concepts_lst
             )
             log.info(f"Processed Summary: {processed_summary}")
             return processed_summary

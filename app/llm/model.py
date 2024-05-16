@@ -11,7 +11,7 @@ from app.llm.open_ai import OpenAi
 
 
 class LLMType(StrEnum):
-    OPENAI_GPT4_TURBO = "gpt-4-turbo-2024-04-09"
+    OPENAI_GPT4 = "gpt-4o-2024-05-13"
     OPENAI_GPT3_5 = "gpt-3.5-turbo-0125"
     GEMINI_PRO = "gemini-pro"
     # AWS_BEDROCK_CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
@@ -22,7 +22,7 @@ class LLMType(StrEnum):
     LLAMA3 = "llama3"
 
     def default_config(self) -> LLMConfig:
-        if self == LLMType.OPENAI_GPT4_TURBO:
+        if self == LLMType.OPENAI_GPT4:
             return LLMConfig(
                 temperature=1,
                 max_tokens=3000,
@@ -78,7 +78,7 @@ class LLM:
     ):
         model_config: LLMConfig = model_config or model_type.default_config()
         match model_type:
-            case LLMType.OPENAI_GPT4_TURBO:
+            case LLMType.OPENAI_GPT4:
                 self._model = OpenAi(
                     model_name=model_type.value, model_config=model_config
                 )

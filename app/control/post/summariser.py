@@ -1,25 +1,47 @@
 import logging
+from typing import Any
 
 from app.exceptions.exception import LogicError
+from app.prompts.summariser.functions import SummaryFunctions
 
 log = logging.getLogger(__name__)
 
 
-def post_process(topic: str, content: str) -> dict[str, str]:
-    """Processes the output of the summariser and returns a dictionary containing the topic-summary pairs.
-    
+def post_process(
+    topic: str, 
+    goal: str, 
+    overview: str, 
+    key_concepts_lst: list[dict[str, str]]
+    ) -> dict[str, Any]:
+    """_summary_
+
     Args:
-        topic (str): The topic of the summary.
-        content (str): The content of the summary.
-        llm_type (LLMType): The type of LLM model used to generate the summary. This is important as certain tokens are added to the output by specific LLM models and need to be removed.
+        topic (str): The topic of the summary
+        goal (str): The goal of the summary
+        overview (str): The overview of the summary
+        key_concepts_lst (list[dict[str, str]]): The list of key concepts of the summary
+
+    Returns:
+        dict[str, Any]: A dictionary containing the parts of the summary
     """
     try:
         if not isinstance(topic, str):
             raise TypeError(f"Topic is not a string: {topic}")
-        if not isinstance(content, str):
-            raise TypeError(f"Content is not a string: {content}")
+        if not isinstance(goal, str):
+            raise TypeError(f"Goal is not a string: {goal}")
+        if not isinstance(overview, str):
+            raise TypeError(f"Overview is not a string: {overview}")
+        if not isinstance(key_concepts_lst, list):
+            raise TypeError(f"Key concepts list is not a list: {key_concepts_lst}")
+        
         _reject_unlikely_topics(topic=topic)
-        return {topic: content}
+        
+        return {
+            SummaryFunctions.TOPIC.value: topic, 
+            SummaryFunctions.GOAL.value: goal, 
+            SummaryFunctions.OVERVIEW.value: overview, 
+            SummaryFunctions.KEY_CONCEPTS.value: key_concepts_lst
+        }
     except (TypeError, ValueError) as e:
         log.error(f"Logic error while post-processing summary: {e}")
         raise LogicError(message=str(e))

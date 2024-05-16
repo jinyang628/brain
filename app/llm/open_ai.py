@@ -42,9 +42,19 @@ class OpenAi(LLMBaseModel):
                 try:
                     json_response: dict[str, str] = json.loads(response.choices[0].message.function_call.arguments)
                     topic: str = json_response[SummaryFunctions.TOPIC]
-                    content: str = json_response[SummaryFunctions.CONTENT]
-                    log.info(f"Topic: {topic}, Content: {content}")
-                    return (topic, content)
+                    goal: str = json_response[SummaryFunctions.GOAL]
+                    overview: str = json_response[SummaryFunctions.OVERVIEW]
+                    key_concepts_lst: list = []
+                    for key_concept in json_response[SummaryFunctions.KEY_CONCEPTS]:
+                        key_concepts_lst.append({
+                            SummaryFunctions.KEY_CONCEPT_TITLE.value: key_concept[SummaryFunctions.KEY_CONCEPT_TITLE],
+                            SummaryFunctions.KEY_CONCEPT_CONTENT.value: key_concept[SummaryFunctions.KEY_CONCEPT_CONTENT],
+                            SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE.value: key_concept[SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE]
+                        })
+                        
+                    
+                    log.info(f"Topic: {topic}, Goal: {goal} Overview: {overview}, Key concepts: {key_concepts_lst}")
+                    return (topic, goal, overview, key_concepts_lst)
                 except Exception as e:
                     log.error(f"Error processing or receiving OpenAI response: {str(e)}")
                     raise InferenceFailure("Error processing OpenAI response")

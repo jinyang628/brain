@@ -35,7 +35,7 @@ class Examiner:
 
     def generate_system_message(self) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4_TURBO:
+            case LLMType.OPENAI_GPT4:
                 return generate_open_ai_examiner_system_message()
             case LLMType.OPENAI_GPT3_5:
                 return generate_open_ai_examiner_system_message()
@@ -54,7 +54,7 @@ class Examiner:
 
     def generate_user_message(self, topic: str, summary_chunk: str) -> str:
         match self._llm_type:
-            case LLMType.OPENAI_GPT4_TURBO:
+            case LLMType.OPENAI_GPT4:
                 return generate_open_ai_examiner_user_message(
                     topic=topic, summary_chunk=summary_chunk
                 )

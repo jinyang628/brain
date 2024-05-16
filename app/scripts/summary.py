@@ -15,9 +15,9 @@ log = logging.getLogger(__name__)
 async def generate_summary(
     conversations: Union[dict[str, Any] | list[Conversation]],
     attempt: int = 1,
-    max_attempts: int = 9,
+    max_attempts: int = 1,
     token_sum: int = 0,
-) -> tuple[dict[str, str], int]:
+) -> tuple[dict[str, Any], int]:
     """Returns the summary in topic-content key-value pairs and the total token sum of the conversation for usage tracking in stomach.
 
     Args:
@@ -45,7 +45,7 @@ async def generate_summary(
     else:
         conversation_lst = conversations 
 
-    merged_summary: dict[str, str] = {}
+    merged_summary: dict[str, Any] = {}
     remaining_conversations: list[Conversation] = []
     summary_tasks = [
         summariser.summarise(conversation=conversation) for conversation in conversation_lst
