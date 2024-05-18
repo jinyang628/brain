@@ -17,7 +17,7 @@ async def generate_summary(
     attempt: int = 1,
     max_attempts: int = 1,
     token_sum: int = 0,
-) -> tuple[dict[str, Any], int]:
+) -> tuple[list[dict[str, Any]], int]:
     """Returns the summary in topic-content key-value pairs and the total token sum of the conversation for usage tracking in stomach.
 
     Args:
@@ -45,14 +45,14 @@ async def generate_summary(
     else:
         conversation_lst = conversations 
 
-    merged_summary: dict[str, Any] = {}
+    summary: list[dict[str, Any]] = []
     remaining_conversations: list[Conversation] = []
     summary_tasks = [
         summariser.summarise(conversation=conversation) for conversation in conversation_lst
     ]
-    summaries = await asyncio.gather(*summary_tasks, return_exceptions=True)
+    summary = await asyncio.gather(*summary_tasks, return_exceptions=True)
     
-    for i, result in enumerate(summaries):
+    for i, result in enumerate(summary):
         if isinstance(result, Exception):
             # TODO: Handle exceptions individually
             log.error(
@@ -60,7 +60,7 @@ async def generate_summary(
             )
             remaining_conversations.append(conversation_lst[i])
         else:
-            merged_summary.update(result)
+            summary.append(result)
 
     if remaining_conversations and attempt < max_attempts:
         log.info(
@@ -77,4 +77,4 @@ async def generate_summary(
             f"Failed to post-process remaining {len(remaining_conversations)} conversations after {max_attempts} attempts."
         )
 
-    return merged_summary, token_sum
+    return summary, token_sum

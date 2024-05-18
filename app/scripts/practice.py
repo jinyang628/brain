@@ -1,19 +1,20 @@
 import logging
 import asyncio
+from typing import Any
 from app.config import InferenceConfig
 from app.exceptions.exception import InferenceFailure, LogicError
 from app.process.examiner import Examiner
+from app.prompts.summariser.functions import SummaryFunctions
 
 log = logging.getLogger(__name__)
 
 
 async def generate_practice(
-    summary: dict[str, str]
+    summary: list[dict[str, Any]]
 ) -> list[dict[str, str]]:
     
     tasks = [
-        _generate(topic, summary_chunk)
-        for topic, summary_chunk in summary.items()
+        _generate(summary_chunk) for summary_chunk in summary
     ]
     
     results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -28,7 +29,6 @@ async def generate_practice(
             continue
         practice.append(
             {
-                "summary_chunk": summary_chunk,
                 "language": result[0],
                 "question": result[1],
                 "half_completed_code": result[2],
@@ -41,7 +41,9 @@ async def generate_practice(
     return practice
         
 async def _generate(
-    topic: str, summary_chunk: str, attempt=1, max_attempts=9
+    summary_chunk: dict[str, Any], 
+    attempt=1, 
+    max_attempts=1
 ) -> tuple[str, str, str]:
     """Generates a practice question and answer for a given topic and summary chunk.
 
@@ -58,7 +60,9 @@ async def _generate(
     examiner = Examiner(config=config)
     try:
         language, question, half_completed_code, fully_completed_code = await examiner.examine(
-            topic=topic, summary_chunk=summary_chunk
+            topic=summary_chunk[SummaryFunctions.TOPIC.value],
+             
+            summary_chunk=summary_chunk
         )
         return language, question, half_completed_code, fully_completed_code
     except LogicError as e:

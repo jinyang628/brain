@@ -29,7 +29,7 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
         tasks: list[str] = input.tasks
         validated_tasks: list[Task] = Task.validate(tasks)
 
-        summary: Optional[dict[str, str]] = None
+        summary: Optional[list[dict[str, str]]] = None
         practice: Optional[list[dict[str, str]]] = None
         for task in validated_tasks:
             if task == Task.SUMMARISE:
