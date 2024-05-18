@@ -42,7 +42,6 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
                         conversations=input.conversation
                     )
                 practice: dict[str, Any] = await generate_practice(summary=summary)
-                
         return JSONResponse(
             status_code=200,
             content={"summary": summary, "practice": practice, "token_sum": token_sum},

@@ -50,9 +50,9 @@ async def generate_summary(
     summary_tasks = [
         summariser.summarise(conversation=conversation) for conversation in conversation_lst
     ]
-    summary = await asyncio.gather(*summary_tasks, return_exceptions=True)
+    results = await asyncio.gather(*summary_tasks, return_exceptions=True)
     
-    for i, result in enumerate(summary):
+    for i, result in enumerate(results):
         if isinstance(result, Exception):
             # TODO: Handle exceptions individually
             log.error(

@@ -11,7 +11,7 @@ class SummaryFunctions(StrEnum):
 
     KEY_CONCEPTS = "key_concepts"
     # List of tuples containing these 3 elements
-    KEY_CONCEPT_TITLE = "key_concept_header"
+    KEY_CONCEPT_HEADER = "key_concept_header"
     KEY_CONCEPT_CONTENT = "key_concept_content"
     KEY_CONCEPT_CODE_EXAMPLE = "key_concept_code_example"
 
@@ -40,20 +40,20 @@ def get_summary_functions() -> list[dict[str, Any]]:
                         "items": {
                             "type": "object",
                             "properties": {
-                                SummaryFunctions.KEY_CONCEPT_TITLE: {
+                                SummaryFunctions.KEY_CONCEPT_HEADER: {
                                     "type": "string",
                                     "description": "The title of the key concept."
                                 },
                                 SummaryFunctions.KEY_CONCEPT_CONTENT: {
                                     "type": "string",
-                                    "description": "The explanation of the key concept in one or two sentences."
+                                    "description": "State the key concept in one or two sentences."
                                 },
                                 SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE: {
                                     "type": "string",
-                                    "description": "A short code example illustrating the key concept."
+                                    "description": "A short code example illustrating the key concept if necessary."
                                 }
                             },
-                            "required": [SummaryFunctions.KEY_CONCEPT_TITLE, SummaryFunctions.KEY_CONCEPT_CONTENT, SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE]
+                            "required": [SummaryFunctions.KEY_CONCEPT_HEADER, SummaryFunctions.KEY_CONCEPT_CONTENT]
                         }
                     }
                 },
