@@ -14,6 +14,7 @@ class SummaryFunctions(StrEnum):
     KEY_CONCEPT_HEADER = "key_concept_header"
     KEY_CONCEPT_CONTENT = "key_concept_content"
     KEY_CONCEPT_CODE_EXAMPLE = "key_concept_code_example"
+    KEY_CONCEPT_CODE_LANGUAGE = "key_concept_code_language"
 
 def get_summary_functions() -> list[dict[str, Any]]:
     summary_functions: list[dict[str, Any]] = [
@@ -51,9 +52,33 @@ def get_summary_functions() -> list[dict[str, Any]]:
                                 SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE: {
                                     "type": "string",
                                     "description": "A short code example illustrating the key concept if necessary."
+                                },
+                                SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE: {
+                                    "type": "string",
+                                    "description": "The programming language of the code example."
                                 }
                             },
-                            "required": [SummaryFunctions.KEY_CONCEPT_HEADER, SummaryFunctions.KEY_CONCEPT_CONTENT]
+                            "required": [SummaryFunctions.KEY_CONCEPT_HEADER, SummaryFunctions.KEY_CONCEPT_CONTENT],
+                            "allOf": [
+                                {
+                                    "if": {
+                                        "properties": {
+                                            SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE: {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE]
+                                    },
+                                    "then": {
+                                        "required": [SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE]
+                                    },
+                                    "else": {
+                                        "not": {
+                                            "required": [SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE]
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 },

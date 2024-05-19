@@ -49,7 +49,8 @@ class OpenAi(LLMBaseModel):
                         key_concepts_lst.append({
                             SummaryFunctions.KEY_CONCEPT_HEADER.value: key_concept[SummaryFunctions.KEY_CONCEPT_HEADER],
                             SummaryFunctions.KEY_CONCEPT_CONTENT.value: key_concept[SummaryFunctions.KEY_CONCEPT_CONTENT],
-                            SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE.value: key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE)
+                            SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE.value: key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE),
+                            SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE.value: key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE)
                         })
                         
                     

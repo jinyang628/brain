@@ -35,6 +35,7 @@ def post_process(
             raise TypeError(f"Key concepts list is not a list: {key_concepts_lst}")
         
         _reject_unlikely_topics(topic=topic)
+        _enforce_code_language_presence(key_concepts_lst=key_concepts_lst)
         
         return {
             SummaryFunctions.TOPIC.value: topic, 
@@ -61,3 +62,14 @@ def _reject_unlikely_topics(topic: str):
     
     if len(topic.split(" ")) <= 1:
         raise ValueError(f"Topic '{topic}' is unlikely to be a valid topic.")
+    
+def _enforce_code_language_presence(key_concepts_lst: list[dict[str, str]]):
+    """Enforces that the code language is present if the code example is present.
+
+    Args:
+        key_concepts_lst (list[dict[str, str]]): the list of key concepts to be checked.
+    """
+    
+    for key_concept in key_concepts_lst:
+        if key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE.value) and not key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE.value):
+            raise ValueError(f"Code example present but code language not specified for key concept: {key_concept}")
