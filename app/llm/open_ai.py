@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any
+from typing import Any, Optional
 from openai import OpenAI
 import os
 
@@ -41,19 +41,28 @@ class OpenAi(LLMBaseModel):
                 )
                 try:
                     json_response: dict[str, str] = json.loads(response.choices[0].message.function_call.arguments)
+                    print("llm_response")
+                    print(json_response)
                     topic: str = json_response[SummaryFunctions.TOPIC]
                     goal: str = json_response[SummaryFunctions.GOAL]
                     overview: str = json_response[SummaryFunctions.OVERVIEW]
                     key_concepts_lst: list = []
                     for key_concept in json_response[SummaryFunctions.KEY_CONCEPTS]:
-                        key_concepts_lst.append({
-                            SummaryFunctions.KEY_CONCEPT_HEADER.value: key_concept[SummaryFunctions.KEY_CONCEPT_HEADER],
-                            SummaryFunctions.KEY_CONCEPT_CONTENT.value: key_concept[SummaryFunctions.KEY_CONCEPT_CONTENT],
-                            SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE.value: key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE),
-                            SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE.value: key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE)
-                        })
-                        
-                    
+                        code_example: Optional[dict[str, str]] = key_concept.get(SummaryFunctions.CODE_EXAMPLE)
+                        if code_example:
+                            key_concepts_lst.append({
+                                SummaryFunctions.TITLE.value: key_concept[SummaryFunctions.TITLE],
+                                SummaryFunctions.EXPLANATION.value: key_concept[SummaryFunctions.EXPLANATION],
+                                SummaryFunctions.CODE_EXAMPLE.value: {
+                                    SummaryFunctions.CODE.value: code_example[SummaryFunctions.CODE],
+                                    SummaryFunctions.LANGUAGE.value: code_example[SummaryFunctions.LANGUAGE]
+                                }
+                            })
+                        else:
+                            key_concepts_lst.append({
+                                SummaryFunctions.TITLE.value: key_concept[SummaryFunctions.TITLE],
+                                SummaryFunctions.EXPLANATION.value: key_concept[SummaryFunctions.EXPLANATION],
+                            })                
                     log.info(f"Topic: {topic}, Goal: {goal} Overview: {overview}, Key concepts: {key_concepts_lst}")
                     return (topic, goal, overview, key_concepts_lst)
                 except Exception as e:

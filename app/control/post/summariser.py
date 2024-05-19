@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from app.exceptions.exception import LogicError
 from app.prompts.summariser.functions import SummaryFunctions
@@ -69,7 +69,9 @@ def _enforce_code_language_presence(key_concepts_lst: list[dict[str, str]]):
     Args:
         key_concepts_lst (list[dict[str, str]]): the list of key concepts to be checked.
     """
-    
     for key_concept in key_concepts_lst:
-        if key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE.value) and not key_concept.get(SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE.value):
+        code_example: Optional[dict[str, str]] = key_concept.get(SummaryFunctions.CODE_EXAMPLE.value)
+        if not code_example:
+            continue
+        if code_example.get(SummaryFunctions.CODE.value) and not code_example.get(SummaryFunctions.LANGUAGE.value):
             raise ValueError(f"Code example present but code language not specified for key concept: {key_concept}")

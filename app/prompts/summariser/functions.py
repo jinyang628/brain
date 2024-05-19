@@ -11,10 +11,12 @@ class SummaryFunctions(StrEnum):
 
     KEY_CONCEPTS = "key_concepts"
     # List of tuples containing these 3 elements
-    KEY_CONCEPT_HEADER = "key_concept_header"
-    KEY_CONCEPT_CONTENT = "key_concept_content"
-    KEY_CONCEPT_CODE_EXAMPLE = "key_concept_code_example"
-    KEY_CONCEPT_CODE_LANGUAGE = "key_concept_code_language"
+    TITLE = "title" # Compulsory
+    EXPLANATION = "explanation" # Compulsory
+    CODE_EXAMPLE = "code_example" # Optional
+    # CODE_EXAMPLE contains these 2 compulsory elements
+    CODE = "code"
+    LANGUAGE = "language"
 
 def get_summary_functions() -> list[dict[str, Any]]:
     summary_functions: list[dict[str, Any]] = [
@@ -41,44 +43,30 @@ def get_summary_functions() -> list[dict[str, Any]]:
                         "items": {
                             "type": "object",
                             "properties": {
-                                SummaryFunctions.KEY_CONCEPT_HEADER: {
+                                SummaryFunctions.TITLE: {
                                     "type": "string",
                                     "description": "The title of the key concept."
                                 },
-                                SummaryFunctions.KEY_CONCEPT_CONTENT: {
+                                SummaryFunctions.EXPLANATION: {
                                     "type": "string",
                                     "description": "State the key concept in one or two sentences."
                                 },
-                                SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE: {
-                                    "type": "string",
-                                    "description": "A short code example illustrating the key concept if necessary."
-                                },
-                                SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE: {
-                                    "type": "string",
-                                    "description": "The programming language of the code example."
+                                SummaryFunctions.CODE_EXAMPLE: {
+                                    "type": "object",
+                                    "properties": {
+                                        SummaryFunctions.CODE: {
+                                            "type": "string",
+                                            "description": "The code example illustrating the key concept."
+                                        },
+                                        SummaryFunctions.LANGUAGE: {
+                                            "type": "string",
+                                            "description": "The programming language of the code example."
+                                        }
+                                    },
+                                    "required": [SummaryFunctions.CODE, SummaryFunctions.LANGUAGE],
                                 }
                             },
-                            "required": [SummaryFunctions.KEY_CONCEPT_HEADER, SummaryFunctions.KEY_CONCEPT_CONTENT],
-                            "allOf": [
-                                {
-                                    "if": {
-                                        "properties": {
-                                            SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE: {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [SummaryFunctions.KEY_CONCEPT_CODE_EXAMPLE]
-                                    },
-                                    "then": {
-                                        "required": [SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE]
-                                    },
-                                    "else": {
-                                        "not": {
-                                            "required": [SummaryFunctions.KEY_CONCEPT_CODE_LANGUAGE]
-                                        }
-                                    }
-                                }
-                            ]
+                            "required": [SummaryFunctions.TITLE, SummaryFunctions.EXPLANATION]
                         }
                     }
                 },
