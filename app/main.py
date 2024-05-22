@@ -44,7 +44,8 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
                 practice: dict[str, Any] = await generate_practice(summary=summary)
         return JSONResponse(
             status_code=200,
-            content={"summary": summary, "practice": practice, "token_sum": token_sum},
+            # TODO: Wrap everything under result
+            content={"result": summary, "token_sum": token_sum},
         )
     except LogicError as e:
         log.error(f"Logic error while trying to generate notes: {str(e)}")
@@ -59,6 +60,7 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
     if summary or practice:
         return JSONResponse(
             status_code=200,
-            content={"summary": summary, "practice": practice, "token_sum": token_sum},
+            # TODO: Wrap everything under result
+            content={"result": summary, "token_sum": token_sum},
         )
     raise HTTPException(status_code=400, detail="Failed to generate notes completely.")
