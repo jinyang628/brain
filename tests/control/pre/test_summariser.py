@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.control.pre.summariser import _split_by_token_length, pre_process
+from app.control.pre.generator import _split_by_token_length, pre_process
 from app.exceptions.exception import LogicError
 from app.models.conversation import Conversation
 
@@ -50,7 +50,7 @@ def test_pre_process(
         return_value=mock_tokenizer,
     ):
         result, token_sum = pre_process(
-            conversation_dict=valid_conversation_dict, max_input_tokens=max_input_tokens
+            conversation=valid_conversation_dict, max_input_tokens=max_input_tokens
         )
         assert mock_tokenizer.call_count == MOCK_TOKENIZER_CALL_COUNT
         assert len(result) == expected_number_of_splits
@@ -60,7 +60,7 @@ def test_pre_process(
 
 def test_pre_process_with_invalid_input(invalid_conversation_dict):
     with pytest.raises(LogicError):
-        pre_process(conversation_dict=invalid_conversation_dict, max_input_tokens=100)
+        pre_process(conversation=invalid_conversation_dict, max_input_tokens=100)
 
 
 @pytest.mark.parametrize(

@@ -1,6 +1,6 @@
 import pytest
 
-from app.models.task import Task
+from app.models.content import Task
 
 
 def test_enum_values():

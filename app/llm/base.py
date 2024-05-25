@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel
 
+from app.models.content import Content
 from app.prompts.config import PromptMessageConfig
 
 
@@ -32,7 +33,7 @@ class LLMBaseModel(ABC):
         self,
         system_message: str,
         user_message: str,
-        config: PromptMessageConfig
+        content_lst: list[Content]
     ) -> str:
         """Sends a message to the AI and returns the response."""
         pass

@@ -1,6 +1,6 @@
 import pytest
 
-from app.control.post.summariser import (
+from app.control.post.generator import (
     _reject_unlikely_topics,
     post_process
 )

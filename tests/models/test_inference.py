@@ -2,7 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.models.inference import InferenceInput
-from app.models.task import Task
+from app.models.content import Task
 
 INFERENCE_INPUT_VALID_DATA = [
     (

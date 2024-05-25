@@ -10,7 +10,7 @@ from app.models.conversation import Conversation
 log = logging.getLogger(__name__)
 
 def pre_process(
-    conversation_dict: dict[str, Any], max_input_tokens: int
+    conversation: dict[str, Any], max_input_tokens: int
 ) -> tuple[list[Conversation], int]:
     """Pre-processes the conversation in preparation for summarisation.
 
@@ -23,7 +23,7 @@ def pre_process(
     """
     try:
         conversation_lst, token_sum = _split_by_token_length(
-            conversation_dict=conversation_dict, max_input_tokens=max_input_tokens
+            conversation_dict=conversation, max_input_tokens=max_input_tokens
         )
         return conversation_lst, token_sum
     except LogicError as e:

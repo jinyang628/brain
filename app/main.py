@@ -1,14 +1,12 @@
 import logging
-from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 
 from app.exceptions.exception import InferenceFailure, LogicError
 from app.models.inference import InferenceInput
-from app.models.task import Task
-from app.scripts.practice import generate_practice
-from app.scripts.summary import generate_summary
+from app.models.content import Content
+from app.scripts.generate import generate
 
 log = logging.getLogger(__name__)
 
@@ -26,26 +24,15 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
        JSONResponse: The generated notes that will be propagated back to Stomach upon successful inference.
     """
     try:
-        tasks: list[str] = input.tasks
-        validated_tasks: list[Task] = Task.validate(tasks)
-
-        summary: Optional[list[dict[str, str]]] = None
-        practice: Optional[list[dict[str, str]]] = None
-        for task in validated_tasks:
-            if task == Task.SUMMARISE:
-                summary, token_sum = await generate_summary(
-                    conversations=input.conversation
-                )
-            elif task == Task.PRACTICE:
-                if not summary:
-                    summary, token_sum = await generate_summary(
-                        conversations=input.conversation
-                    )
-                practice: dict[str, Any] = await generate_practice(summary=summary)
+        content: list[str] = input.content
+        validated_content_lst: list[Content] = Content.validate(content_str_lst=content)
+        result, token_sum = await generate(
+            conversation=input.conversation,
+            content_lst=validated_content_lst
+        )
         return JSONResponse(
             status_code=200,
-            # TODO: Wrap everything under result
-            content={"result": summary, "token_sum": token_sum},
+            content={"result": result, "token_sum": token_sum},
         )
     except LogicError as e:
         log.error(f"Logic error while trying to generate notes: {str(e)}")
@@ -55,12 +42,5 @@ async def generate_notes(input: InferenceInput) -> JSONResponse:
         log.error(f"Error in generating notes: {str(e)}")
         # Raise exception only when an unexpected error occurs. If not, try to return good results as much as possible.
         raise HTTPException(status_code=500, detail=str(e))
-    
-    # Returns the parts that have been successfully processed. 
-    if summary or practice:
-        return JSONResponse(
-            status_code=200,
-            # TODO: Wrap everything under result
-            content={"result": summary, "token_sum": token_sum},
-        )
+
     raise HTTPException(status_code=400, detail="Failed to generate notes completely.")

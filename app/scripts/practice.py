@@ -4,7 +4,7 @@ from typing import Any
 from app.config import InferenceConfig
 from app.exceptions.exception import InferenceFailure, LogicError
 from app.process.examiner import Examiner
-from app.prompts.summariser.functions import SummaryFunctions
+from app.prompts.generator.functions import NotesFunctions
 
 log = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ async def _generate(
     examiner = Examiner(config=config)
     try:
         language, question, half_completed_code, fully_completed_code = await examiner.examine(
-            topic=summary_chunk[SummaryFunctions.TOPIC.value],
+            topic=summary_chunk[NotesFunctions.TOPIC.value],
              
             summary_chunk=summary_chunk
         )

@@ -5,7 +5,7 @@ from app.control.post.examiner import post_process
 from app.exceptions.exception import InferenceFailure, LogicError
 from app.llm.base import LLMBaseModel
 from app.llm.model import LLM, LLMType
-from app.models.task import Task
+from app.models.content import Task
 from app.prompts.config import PromptMessageConfig
 from app.prompts.examiner.anthropic import (
     generate_anthropic_examiner_system_message,

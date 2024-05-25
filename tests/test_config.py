@@ -2,7 +2,7 @@ import pytest
 
 from app.config import InferenceConfig
 from app.llm.model import LLMType
-from app.models.task import Task
+from app.models.content import Task
 
 @pytest.fixture
 def config():
