@@ -2,7 +2,6 @@ import pytest
 
 from app.config import InferenceConfig
 from app.llm.model import LLMType
-from app.models.content import Task
 
 @pytest.fixture
 def config():
@@ -10,7 +9,4 @@ def config():
 
 def test_inference_config_initialization(config):
     """Test the default initialization of InferenceConfig."""
-    assert Task.SUMMARISE in config.llm_type
-    assert Task.PRACTICE in config.llm_type
-    assert config.llm_type[Task.SUMMARISE] == LLMType.OPENAI_GPT4
-    assert config.llm_type[Task.PRACTICE] == LLMType.OPENAI_GPT4
+    assert config.llm_type == LLMType.OPENAI_GPT4

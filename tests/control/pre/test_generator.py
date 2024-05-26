@@ -46,7 +46,7 @@ def test_pre_process(
     max_input_tokens, expected_number_of_splits, mock_tokenizer, valid_conversation_dict
 ):
     with patch(
-        "app.control.pre.summariser.AutoTokenizer.from_pretrained",
+        "app.control.pre.generator.AutoTokenizer.from_pretrained",
         return_value=mock_tokenizer,
     ):
         result, token_sum = pre_process(
@@ -70,7 +70,7 @@ def test_split_by_token_length(
     max_input_tokens, expected_number_of_splits, mock_tokenizer, valid_conversation_dict
 ):
     with patch(
-        "app.control.pre.summariser.AutoTokenizer.from_pretrained",
+        "app.control.pre.generator.AutoTokenizer.from_pretrained",
         return_value=mock_tokenizer,
     ):
         result, token_sum = _split_by_token_length(

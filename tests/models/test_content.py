@@ -1,28 +1,28 @@
 import pytest
 
-from app.models.content import Task
+from app.models.content import Content
 
 
 def test_enum_values():
-    assert Task.SUMMARISE == "summarise"
-    assert Task.PRACTICE == "practice"
+    assert Content.MCQ == "mcq"
+    assert Content.CODE == "code"
 
 
 VALIDATE_VALID_DATA = [
-    (["summarise"], [Task.SUMMARISE]),
-    (["practice"], [Task.PRACTICE]),
-    (["summarise", "practice"], [Task.SUMMARISE, Task.PRACTICE]),
+    (["mcq"], [Content.MCQ]),
+    (["code"], [Content.CODE]),
+    (["mcq", "code"], [Content.MCQ, Content.CODE]),
 ]
 
 
 @pytest.mark.parametrize("input, expected", VALIDATE_VALID_DATA)
 def test_validate_valid(input, expected):
-    assert Task.validate(input) == expected
+    assert Content.validate(input) == expected
 
 
 VALIDATE_INVALID_DATA = [
     ["unknown"],
-    ["summarise", "unknown"],
+    ["mcq", "unknown"],
 ]
 
 
@@ -30,4 +30,4 @@ VALIDATE_INVALID_DATA = [
 @pytest.mark.parametrize("invalid_input", VALIDATE_INVALID_DATA)
 def test_validate_invalid(invalid_input):
     with pytest.raises(ValueError):
-        Task.validate(invalid_input)
+        Content.validate(invalid_input)
