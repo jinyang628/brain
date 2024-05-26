@@ -70,6 +70,7 @@ async def generate(
         )
         return await generate(
             conversation=remaining_conversations,
+            content_lst=content_lst,
             attempt=attempt + 1,
             max_attempts=max_attempts,
             token_sum=token_sum,
