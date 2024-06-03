@@ -125,13 +125,13 @@ class Generator:
         user_message: str = self.generate_user_message(conversation=conversation)
 
         try:
-            topic, goal, overview, key_concepts_lst, tips_lst, mcq_practice, code_practice = await self._model.send_message(
+            topic, goal, context, overview, key_concepts_lst, tips_lst, mcq_practice, code_practice = await self._model.send_message(
                 system_message=system_message, 
                 user_message=user_message, 
                 content_lst=content_lst
             )
             processed_summary: dict[str, Any] = post_process(
-                topic=topic, goal=goal, overview=overview, key_concepts_lst=key_concepts_lst, tips_lst=tips_lst, mcq_practice=mcq_practice, code_practice=code_practice
+                topic=topic, goal=goal, context=context, overview=overview, key_concepts_lst=key_concepts_lst, tips_lst=tips_lst, mcq_practice=mcq_practice, code_practice=code_practice
             )
             log.info(f"Processed Summary: {processed_summary}")
             return processed_summary

@@ -9,6 +9,8 @@ from app.models.conversation import Conversation
 
 log = logging.getLogger(__name__)
 
+MAX_CONVERSATION_TOKENS = 10000
+
 def pre_process(
     conversation: dict[str, Any], max_input_tokens: int
 ) -> tuple[list[Conversation], int]:
@@ -85,9 +87,14 @@ def _split_by_token_length(
             )
             conversation_lst.append(Conversation(**splitted_conversation_dict))
             curr_token_sum = 0
-            splitted_conversation_dict: dict[str, Any] = {"title": title}
+            splitted_conversation_dict: dict[str, Any] = {"title": title}            
         splitted_conversation_dict[conversation_dict_key] = conversation_dict[
             conversation_dict_key
         ]
+        
+        # We will set a hard limit on the total token sum of the conversation to prevent abuse
+        if total_token_sum > MAX_CONVERSATION_TOKENS:
+            break
+        
     conversation_lst.append(Conversation(**splitted_conversation_dict))
     return (conversation_lst, total_token_sum)

@@ -47,6 +47,7 @@ class OpenAi(LLMBaseModel):
                 print(json_response)
                 topic: str = json_response[NotesFunctions.TOPIC]
                 goal: str = json_response[NotesFunctions.GOAL]
+                context: str = json_response[NotesFunctions.CONTEXT]
                 overview: str = json_response[NotesFunctions.OVERVIEW]
                 
                 key_concepts_lst: list = []
@@ -95,8 +96,8 @@ class OpenAi(LLMBaseModel):
                         NotesFunctions.CODE_PRACTICE_LANGUAGE.value: code_practice[NotesFunctions.CODE_PRACTICE_LANGUAGE]
                     }
                 
-                log.info(f"Topic: {topic}, Goal: {goal} Overview: {overview}, Key concepts: {key_concepts_lst}, Tips: {tips_lst}, MCQ Practice: {mcq_practice}, Code Practice: {code_practice}")
-                return (topic, goal, overview, key_concepts_lst, tips_lst, mcq_practice, code_practice)
+                log.info(f"Topic: {topic}, Goal: {goal}, Context: {context}, Overview: {overview}, Key concepts: {key_concepts_lst}, Tips: {tips_lst}, MCQ Practice: {mcq_practice}, Code Practice: {code_practice}")
+                return (topic, goal, context, overview, key_concepts_lst, tips_lst, mcq_practice, code_practice)
             except Exception as e:
                 log.error(f"Error processing or receiving OpenAI response: {str(e)}")
                 raise InferenceFailure("Error processing OpenAI response")

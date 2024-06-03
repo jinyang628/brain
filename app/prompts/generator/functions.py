@@ -7,6 +7,7 @@ class NotesFunctions(StrEnum):
     # Unique element to output 
     TOPIC = "topic" # Compulsory
     GOAL = "goal" # Compulsory
+    CONTEXT = "context" # Compulsory
     OVERVIEW = "overview" # Compulsory
 
     # List element to output
@@ -64,6 +65,10 @@ def get_notes_functions(
             "type": "string",
             "description": "The goal of the revision notes in one sentence. Students should achieve this goal after reading the notes."
         },
+        NotesFunctions.CONTEXT: {
+            "type": "string",
+            "description": "A summary of the questions which the user asked in fewer than 2 sentences. These questions serve as the context behind the revision notes."
+        },
         NotesFunctions.OVERVIEW: {
             "type": "string",
             "description": "A high-level summary of the key ideas present in the revision notes in one sentence."
@@ -80,7 +85,7 @@ def get_notes_functions(
                     },
                     NotesFunctions.KEY_CONCEPT_EXPLANATION: {
                         "type": "string",
-                        "description": "State the key concept in one or two sentences."
+                        "description": "State the key concept in one or two sentences. Bold important terms."
                     },
                     NotesFunctions.KEY_CONCEPT_CODE_EXAMPLE: {
                         "type": "object",
@@ -187,6 +192,7 @@ def get_notes_functions(
                 "required": [
                     NotesFunctions.TOPIC, 
                     NotesFunctions.GOAL, 
+                    NotesFunctions.CONTEXT,
                     NotesFunctions.OVERVIEW, 
                     NotesFunctions.KEY_CONCEPTS,
                     NotesFunctions.TIPS,

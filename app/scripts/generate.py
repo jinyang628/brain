@@ -16,7 +16,7 @@ async def generate(
     conversation: Union[dict[str, Any] | list[Conversation]],
     content_lst: list[Content],
     attempt: int = 1,
-    max_attempts: int = 3,
+    max_attempts: int = 1,
     token_sum: int = 0,
 ) -> tuple[list[dict[str, Any]], int]:
     """Returns the gemerated notes and the total token sum of the conversation for usage tracking in stomach.

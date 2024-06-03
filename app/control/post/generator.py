@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 def post_process(
     topic: str, 
     goal: str, 
+    context: str,
     overview: str, 
     key_concepts_lst: list[dict[str, str]],
     tips_lst: Optional[list[dict[str, str]]],
@@ -21,6 +22,7 @@ def post_process(
     Args:
         topic (str): The topic of the revision notes
         goal (str): The goal of the revison notes
+        context (str): The questions which the user asked which serve as the context of the revision notes
         overview (str): The overview of the revision notes
         key_concepts_lst (list[dict[str, str]]): The list of key concepts of the revision notes
         tips_lst (list[dict[str, str]]): The list of tips of the revision notes
@@ -38,6 +40,8 @@ def post_process(
 
         if not isinstance(goal, str):
             raise TypeError(f"Goal is not a string: {goal}")
+        if not isinstance(context, str):
+            raise TypeError(f"Context is not a string: {context}")
         if not isinstance(overview, str):
             raise TypeError(f"Overview is not a string: {overview}")
         if not isinstance(key_concepts_lst, list):
@@ -67,6 +71,7 @@ def post_process(
         return {
             NotesFunctions.TOPIC.value: topic, 
             NotesFunctions.GOAL.value: goal, 
+            NotesFunctions.CONTEXT.value: context,
             NotesFunctions.OVERVIEW.value: overview, 
             NotesFunctions.KEY_CONCEPTS.value: key_concepts_lst,
             NotesFunctions.TIPS.value: tips_lst,
