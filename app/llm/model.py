@@ -11,7 +11,7 @@ from app.llm.open_ai import OpenAi
 
 
 class LLMType(StrEnum):
-    OPENAI_GPT4 = "gpt-4o-2024-05-13"
+    OPENAI_GPT4 = "gpt-4o-mini-2024-07-18"
     OPENAI_GPT3_5 = "gpt-3.5-turbo-0125"
     GEMINI_PRO = "gemini-pro"
     # AWS_BEDROCK_CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
